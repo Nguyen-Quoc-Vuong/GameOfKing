@@ -8,6 +8,18 @@ LTexture::LTexture()
 	mHeight = 0;	
 }
 
+void LTexture::free()
+{
+
+	if( mTexture != nullptr )
+	{
+		SDL_DestroyTexture( mTexture );
+		mTexture = nullptr;
+		mWidth = 0;
+		mHeight = 0;
+	}
+}
+
 LTexture::~LTexture()
 {
 	free();
@@ -47,18 +59,6 @@ bool LTexture::LoadFromFile(string path, SDL_Renderer* gRenderer )
 	//Return success
 	mTexture = newTexture;
 	return mTexture != nullptr;
-}
-
-void LTexture::free()
-{
-	//Free texture if it exists
-	if( mTexture != nullptr )
-	{
-		SDL_DestroyTexture( mTexture );
-		mTexture = nullptr;
-		mWidth = 0;
-		mHeight = 0;
-	}
 }
 
 bool LTexture::LoadFromRenderedText(string textureText, TTF_Font *gFont, SDL_Color textColor, SDL_Renderer* gRenderer)

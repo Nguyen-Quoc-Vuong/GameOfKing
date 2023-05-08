@@ -3,12 +3,11 @@
 #include"LTexture.h"
 #include"common.h"
 
-#define Enemy_max_height  240
-#define Enemy_min_height  270
+#define Enemy_max_height  300
+#define Enemy_min_height  330
 
 #define Enemy_position_range 250
 #define ENEMY1_RANGE 100
-#define ENEMY2_RANGE 350
 #define ENEMY3_RANGE 500
 
 class Enemy
@@ -26,9 +25,6 @@ public:
 	void GenerateBat(Enemy& enemy,
 		SDL_Rect* gEnemyClips,
 		SDL_Renderer* gRenderer);//dơi
-	void GenerateGate(Enemy& enemy,
-		SDL_Rect* gGateClips,
-		SDL_Renderer* gRenderer);//cổng
 	void GenerateGolem(Enemy& enemy,
 		SDL_Rect(&gEnemyClips)[12],
 		SDL_Renderer* gRenderer);//quái vật

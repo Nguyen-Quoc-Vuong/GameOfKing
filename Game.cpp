@@ -6,50 +6,49 @@
 #include "Button.h"
 #include "Enemy.h"
 #include "common.h"
-#include <ctime>
-SDL_Window* gWindow;
-SDL_Renderer* gRenderer;
-SDL_Texture* gTexture;
+SDL_Window* gWindow = nullptr;
+SDL_Renderer* gRenderer = nullptr;
+SDL_Texture* gTexture = nullptr;
 
 LTexture LoadMenuTexture;
 LTexture LoadPlayTexture;
+LTexture LoadHelpTexture;
 LTexture LoadExitTexture;
 LTexture LoadPauseTexture;
 LTexture LoadContinueTexture;
 LTexture LoadLoseTexture;
 LTexture LoadBackTexture;
-LTexture LoadSoundTexture;
+// LTexture LoadSoundTexture;
 LTexture LoadText1Texture;
-LTexture LoadScoreTexture;
-LTexture LoadDeathCountTexture;
 LTexture LoadText2Texture;
 LTexture LoadText3Texture;
+LTexture LoadScoreTexture;
+LTexture LoadDeathCountTexture;
 LTexture LoadHighScoreTexture;
 LTexture LoadGroundTexture;
 LTexture BackgroundTexture[BACKGROUND_LAYER];
 LTexture BackgroundTexture1[BACKGROUND_LAYER];
-LTexture BackgroundTexture2[BACKGROUND_LAYER];
-LTexture BackgroundTexture3[BACKGROUND_LAYER];
 LTexture gText1Texture;
 LTexture gText2Texture;
 LTexture gText3Texture;
 LTexture gScoreTexture;
 LTexture gHighScoreTexture;
 LTexture gDeathCountTexture;
+LTexture gInstructionTexture;
 
 SDL_Rect LoadPlay[BUTTON_TOTAL];
+SDL_Rect LoadHelp[BUTTON_TOTAL];
 SDL_Rect LoadExit[BUTTON_TOTAL];
 SDL_Rect LoadPause[BUTTON_TOTAL];
 SDL_Rect LoadBack[BUTTON_TOTAL];
 SDL_Rect LoadPlayAgain[BUTTON_TOTAL];
 SDL_Rect LoadSound[BUTTON_TOTAL];
+SDL_Rect LoadInfo[BUTTON_TOTAL];
 SDL_Rect LoadContinue[BUTTON_TOTAL];
 SDL_Rect gDinosaurClips[RUNNING_FRAMES];
 SDL_Rect gEnemyClips3[FLYING_FRAMES];
-SDL_Rect gGateClips[16];
 SDL_Rect gEnemyClips1[12];
-SDL_Rect gEnemyClips2[12];
-SDL_Rect gEnemyClipsGolem[18];
+SDL_Rect gEnemyClipsGolem[6];
 
 SDL_Color textColor = {0,0,0};
 TTF_Font* gFont = nullptr;
@@ -57,83 +56,104 @@ Mix_Music* gMusic = nullptr;
 Mix_Music* gMenuMusic = nullptr;
 Mix_Chunk* gClick = nullptr;
 Mix_Chunk* gJump = nullptr;
-//Mix_Chunk* gTele = nullptr;
 Mix_Chunk* gLose = nullptr;
 
 Button PlayButton(PLAY_BUTON_POSX, PLAY_BUTTON_POSY);
+Button HelpButton(HELP_BUTTON_POSX, HELP_BUTTON_POSY);
 Button ExitButton(EXIT_BUTTON_POSX, EXIT_BUTTON_POSY);
-Button SoundButton(852, 12);
-Button BackButton(EXIT_BUTTON_POSX, EXIT_BUTTON_POSY);
+Button BackButton(BACK_BUTTON_POSX, BACK_BUTTON_POSY);
 Button PauseButton(PAUSE_BUTTON_POSX, PAUSE_BUTTON_POSY);
 Button ContinueButton(CONTINUE_BUTTON_POSX, CONTINUE_BUTTON_POSY);
 
-Dinosaur dinosaur(MINOTOUR1);
+Dinosaur dinosaur;
 
 const string SCENCE1[BACKGROUND_LAYER] = {
-	"src/imgs/background/Scence_01.png",
-	"src/imgs/background/Scence_02.png",
-	"src/imgs/background/Scence_03.png",
-	"src/imgs/background/Scence_04.png",
-	"src/imgs/background/Scence_05.png",
-	"src/imgs/background/Scence_06.png",
-	"src/imgs/background/Scence_07.png",
-	"src/imgs/background/Scence_08.png",
-	"src/imgs/background/Scence_09.png",
+	"src/imgs/background/1.png",
+	"src/imgs/background/2.png",
+	"src/imgs/background/3.png",
+	"src/imgs/background/4.png",
+	"src/imgs/background/5.png",
+	"src/imgs/background/6.png",
+	"src/imgs/background/7.png",
+	"src/imgs/background/8.png",
+	"src/imgs/background/9.png",
 };
 
+const std::string SCENCE2[BACKGROUND_LAYER] = {
+	"src/imgs/background/Scence3_01.png",
+	"src/imgs/background/Scence3_02.png",
+	"src/imgs/background/Scence3_03.png",
+	"src/imgs/background/Scence3_04.png",
+	"src/imgs/background/Scence3_05.png",
+	"src/imgs/background/Scence3_06.png",
+	"src/imgs/background/Scence3_07.png",
+	"src/imgs/background/Scence3_08.png",
+	"src/imgs/background/Scence3_09.png",
+};
 
 bool Game::init()
 {
 	//Initialization flag
 	bool success = true;
-	
-	//Initialize SDL
-	if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
+
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_VIDEO) < 0)
 	{
-		printf( "SDL could not initialize! SDL Error: %s\n", SDL_GetError() );
+		LogError("Can not initialize SDL.", SDL_ERROR);
 		success = false;
 	}
+
 	else
 	{
-		//Set texture filtering to linear
-		if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" ) )
+		SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
+		if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
 		{
-			printf( "Warning: Linear texture filtering not enabled!" );
+			std::cout << "Warning: Linear texture filtering not enabled!";
 		}
 
-		//Create window
-		gWindow = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
-		if( gWindow == nullptr )
+		gWindow = SDL_CreateWindow(WINDOW_TITLE.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+			SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+		if (gWindow == NULL)
 		{
-			printf( "Window could not be created! SDL Error: %s\n", SDL_GetError() );
+			LogError("Can not create window", SDL_ERROR);
 			success = false;
 		}
 		else
 		{
-			//Create renderer for window
-			gRenderer = SDL_CreateRenderer( gWindow, -1, SDL_RENDERER_ACCELERATED| SDL_RENDERER_PRESENTVSYNC | SDL_WINDOW_OPENGL );
-			if( gRenderer == nullptr )
+			gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_WINDOW_OPENGL);
+			if (gRenderer == NULL)
 			{
-				printf( "Renderer could not be created! SDL Error: %s\n", SDL_GetError() );
+				LogError("Can not create renderer", SDL_ERROR);
 				success = false;
 			}
 			else
 			{
-				//Initialize renderer color
-				SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 
-				//Initialize PNG loading
 				int imgFlags = IMG_INIT_PNG;
-				if( !( IMG_Init( imgFlags ) & imgFlags ) )
+				if (!(IMG_Init(imgFlags) & imgFlags))
 				{
-					printf( "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError() );
+					LogError("Can not initialize SDL_image", IMG_ERROR);
+					success = false;
+				}
+
+				if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+				{
+					printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
+					success = false;
+				}
+
+				if (TTF_Init() == -1)
+				{
+					printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
 					success = false;
 				}
 			}
 		}
 	}
+	return success;
+}
 
-	return success;}
+	
 bool Game::LoadMedia(){
 		
 	bool success = true;
@@ -150,7 +170,7 @@ bool Game::LoadMedia(){
 		LogError("Failed to load menu music", MIX_ERROR);
 		success = false;
 	}
-		//gTele = 
+		 
 	gClick = Mix_LoadWAV("src/sound/mouse_click.wav");
 	if (gClick == nullptr)
 	{
@@ -173,7 +193,7 @@ bool Game::LoadMedia(){
 		gFont = TTF_OpenFont("src/font/PressStart2P.ttf", 15);
 		if (gFont == nullptr)
 		{
-			LogError("Failed to load font",MIX_ERROR);
+			LogError("Failed to load font",TTF_ERROR);
 			success = false;
 		}
 		else
@@ -198,7 +218,12 @@ bool Game::LoadMedia(){
 				cout << "Failed to load menu image" << endl;
 				success = false;
 			}
-
+			if (!gInstructionTexture.LoadFromFile("src/imgs/background/instruction.png", gRenderer))
+			{
+				cout << "Failed to load instruction image" << endl;
+				success = false;
+			}
+			
 			if (!LoadPlayTexture.LoadFromFile("src/imgs/button/big_button/play_button.png",gRenderer))
 			{
 				cout << "Failed to load instruction image" << endl;
@@ -207,10 +232,23 @@ bool Game::LoadMedia(){
 			else {
 				for (int i = 0; i < BUTTON_TOTAL; ++i)
 				{
-					LoadPlay[i].x = 130 * i;
+					LoadPlay[i].x = 150 * i;
 					LoadPlay[i].y = 0;
-					LoadPlay[i].w = 130;
-					LoadPlay[i].h = 45;
+					LoadPlay[i].w = 150;
+					LoadPlay[i].h = 98;
+				}
+			}
+			if (!LoadHelpTexture.LoadFromFile("src/imgs/button/big_button/help_button.png", gRenderer)){
+				cout << "Failed to load instruction image" << endl;
+				success = false;
+			}
+			else {
+				for (int i = 0; i < BUTTON_TOTAL; ++i)
+				{
+					LoadHelp[i].x = 150 * i;
+					LoadHelp[i].y = 0;
+					LoadHelp[i].w = 150;
+					LoadHelp[i].h = 98;
 				}
 			}
 			if (!LoadBackTexture.LoadFromFile( "src/imgs/button/big_button/back_button.png", gRenderer))
@@ -227,9 +265,8 @@ bool Game::LoadMedia(){
 						LoadBack[i].w = 57;
 						LoadBack[i].h = 57;
 					}
-				}
-			
-	if (!LoadExitTexture.LoadFromFile("src/imgs/button/big_button/exit_button.png", gRenderer))
+				}	
+			if (!LoadExitTexture.LoadFromFile("src/imgs/button/big_button/exit_button.png", gRenderer))
 			{
 				cout << "Failed to load instruction image" << endl;
 				success = false;
@@ -237,13 +274,12 @@ bool Game::LoadMedia(){
 			else {
 				for (int i = 0; i < BUTTON_TOTAL; ++i)
 				{
-					LoadExit[i].x = 130 * i;
+					LoadExit[i].x = 150 * i;
 					LoadExit[i].y = 0;
-					LoadExit[i].w = 130;
-					LoadExit[i].h = 45;
+					LoadExit[i].w = 150;
+					LoadExit[i].h = 98;
 				}
 			}
-	//if (!LoadSoundTexture.LoadFromFile())
 	if (!LoadPauseTexture.LoadFromFile("src/imgs/button/big_button/pause_button.png",gRenderer))
 			{
 				cout << "Failed to load instruction image" << endl;
@@ -266,7 +302,7 @@ bool Game::LoadMedia(){
 			else {
 				for (int i = 0; i < BUTTON_TOTAL; ++i)
 				{
-					LoadContinue[i].x = 57 * i;
+					LoadContinue[i].x  = 57 * i;
 					LoadContinue[i].y = 0;
 					LoadContinue[i].w = 57;
 					LoadContinue[i].h = 57;
@@ -293,8 +329,8 @@ bool Game::LoadMedia(){
 	}
 
 	}
-	
 	}
+	
 return success;
 
  }
@@ -314,88 +350,87 @@ void Game::HandleEvents(){
 
 			bool Quit_Game = false;
 			
-			HandlePlayButton(&e_mouse, PlayButton, Quit_Menu, Play_Again, gClick);	
-			HandleSoundButton(&e_mouse, SoundButton, gClick);
+			HandlePlayButton(&e_mouse, PlayButton, Quit_Menu, Play_Again, gClick);
+			
+			HandleHelpButton(&e_mouse, LoadBack,
+							HelpButton, BackButton, 
+							gInstructionTexture, LoadBackTexture,
+							gRenderer, Quit_Game, gClick);
+
 			HandleExitButton(&e_mouse, ExitButton, Quit_Menu, gClick);
+			
+			
 		}
 		LoadMenuTexture.Render(0, 0, gRenderer);
 
 
 		SDL_Rect* currentClip_Play = &LoadPlay[PlayButton.currentMenu];
 		PlayButton.Render(currentClip_Play, gRenderer, LoadPlayTexture);
-		SDL_Rect* currentClip_Sound = &LoadSound[SoundButton.currentMenu];
-		SoundButton.Render(currentClip_Sound, gRenderer, LoadSoundTexture);
+		
+		SDL_Rect* currentClip_Help = &LoadHelp[HelpButton.currentMenu];
+		HelpButton.Render(currentClip_Help, gRenderer, LoadHelpTexture);
+
 		SDL_Rect* currentClip_Exit = &LoadExit[ExitButton.currentMenu];
 		ExitButton.Render(currentClip_Exit, gRenderer, LoadExitTexture);
+
 		SDL_RenderPresent(gRenderer);
 
 
 	}
 	int deathCount = 0;
 	while (Play_Again){
+		
 		for (int i = 0; i < 9; i++) {
 			BackgroundTexture[i] = BackgroundTexture1[i];
 		}
-	bool winter=true;
-	bool createGate = false;
-	srand(time(nullptr));
+	srand(time(NULL));
 	int time = 0;
 	int score = 0;
-	int acceleration = 2;
+	int acceleration = 0;
 	int frame_Dinosaur = 0;
 	int frame_Enemy = 0;
 	int frame_Enemy1 = 0;
-	int frame_Enemy2 = 0;
 	int frame_Enemy3 = 0;
-	int frame_Gate = 0;
 	int count = 0;
 	string highscore = GetHighScoreFromFile("high_score.txt");
 		SDL_Event e;
 	 	Enemy enemy1(GOLEM);
-		Enemy enemy2(GOLEM);
 		Enemy enemy3(IN_AIR_ENEMY);
-		//Enemy gate(GATE);
+
 		Mix_PlayMusic(gMusic, IS_REPEATITIVE);
 		enemy1.GenerateGolem(enemy1, gEnemyClips1, gRenderer);
-		enemy2.GenerateGolem(enemy2, gEnemyClips2, gRenderer);
-		enemy3.GenerateBat(enemy3, gEnemyClips3, gRenderer);
 		
+		enemy3.GenerateBat(enemy3, gEnemyClips3, gRenderer);	
 		dinosaur.GenerateDinosaur(dinosaur, gDinosaurClips, gRenderer);
+
 		int OffsetSpeed_Ground = BASE_OFFSET_SPEED;
 		vector <double> OffsetSpeed_Bkgr(BACKGROUND_LAYER, BASE_OFFSET_SPEED);
 		bool Quit = false;
 		bool Game_State = true;
-		int next = 0;
-		bool lose = false;
 		while (!Quit){
 			if (Game_State) {
-				if (enemy1.GetPosX() >= 0 && abs(enemy1.GetPosX() - enemy2.GetPosX()) < 170 + 20 * acceleration) {
-					enemy2.posX = enemy1.posX - (170 + 20 * acceleration);
-				}
+				
 				 UpdateGameTimeAndScore(time, acceleration, score);
 				while (SDL_PollEvent(&e) != 0){
 					if (e.type == SDL_QUIT) {
 						Quit = true;
 						Play_Again = false;
 					}
+
 					else HandlePauseButton(&e,gRenderer,LoadContinue,
 						PauseButton,ContinueButton,LoadContinueTexture,Game_State,gClick);
+
 					dinosaur.HandleEvent(e, gJump);	
 				}
 				SDL_SetRenderDrawColor(gRenderer,0xFF,0xFF,0xFF,0xFF);
 				SDL_RenderClear(gRenderer);
-				if (winter){
+	
 					enemy1.GenerateGolem(enemy1, gEnemyClips1, gRenderer);
-					enemy2.GenerateGolem(enemy2, gEnemyClips2, gRenderer);
 					enemy1.pathID = "src/imgs/enemy/golem.png";
-					enemy2.pathID = "src/imgs/enemy/golem.png";
-					//portal.pathID = "imgs/enemy/portal.png";
+				
 					RenderScrollingBackground(OffsetSpeed_Bkgr, BackgroundTexture1, gRenderer);
-				}
-				// if (score >= 180 && score % 180 == 0 )
-				// {
-				// 	createPortal = true;
-				// }
+					//RenderScrollingGround(OffsetSpeed_Ground, acceleration, LoadGroundTexture, gRenderer);
+				
 				dinosaur.Move();
 				SDL_Rect* currentClip_Dinosaur = nullptr;
 				if (dinosaur.OnGround())
@@ -409,104 +444,54 @@ void Game::HandleEvents(){
 					dinosaur.Render(gRenderer, currentClip_Dinosaur);
 				}
 				SDL_Rect* currentClip_Enemy1 = &gEnemyClips1[frame_Enemy1 / SLOW_FRAME_ENEMY];
-				SDL_Rect* currentClip_Enemy2 = &gEnemyClips2[frame_Enemy2 / SLOW_FRAME_ENEMY];
 				SDL_Rect* currentClip_Enemy3 = &gEnemyClips3[frame_Enemy3 / SLOW_FRAME_ENEMY];
-				//SDL_Rect* currentClip_Gate = &gGateClips[frame_Gate / SLOW_FRAME_ENEMY];
+				
 				enemy1.Move(acceleration);
 				enemy1.Render(gRenderer, currentClip_Enemy1);
-				enemy2.Move(acceleration);
-				enemy2.Render(gRenderer, currentClip_Enemy2);
+
 				enemy3.Move(acceleration);
 				enemy3.Render(gRenderer, currentClip_Enemy3);
-				// if (createGate) {
-				// 	if
-				// }
+				
 				SDL_Rect* currentClip_Pause = &LoadPause[PauseButton.currentMenu];
 				PauseButton.Render(currentClip_Pause, gRenderer, LoadPauseTexture);
+
 				DrawPlayerScore(gText1Texture, gScoreTexture, textColor, gRenderer, gFont, score);
 				DrawPlayerHighScore(gText2Texture, gHighScoreTexture, textColor, gRenderer, gFont, highscore);
 				DrawDeath(gText3Texture, gDeathCountTexture, textColor, gRenderer, gFont, deathCount);
+
 				if (CheckEnemyColission(dinosaur,
-					enemy1, enemy2, enemy3, 
-					currentClip_Dinosaur, currentClip_Enemy1, currentClip_Enemy2, currentClip_Enemy3))
+					enemy1, enemy3, 
+					currentClip_Dinosaur, currentClip_Enemy1, currentClip_Enemy3))
 				{
 					deathCount++;
 					Mix_PauseMusic();
 					Mix_PlayChannel(MIX_CHANNEL, gLose, NOT_REPEATITIVE);
 					UpdateHighScore("high_score.txt", score, highscore);
 					Quit = true;
+				}
+				SDL_RenderPresent(gRenderer);
+				ControlDinoFrame(frame_Dinosaur);
+				ControlGolemFrame(frame_Enemy1);
+				ControlBatFrame(frame_Enemy3);
+
+			}
+			
+		}
 					DrawEndGameSelection(LoadLoseTexture, &e, gRenderer, Play_Again);
 					if (!Play_Again)
 					{
 						enemy1.~Enemy();
-						enemy2.~Enemy();
 						enemy3.~Enemy();
-						//gate.~Enemy();
 					}
-				}
-				// if (CheckColission(dinosaur, currentClip_Dinosaur, gate, currentClip_Gate) && createGate) 
-				// {
-				// 	createGate = false;
+			}	
+}
+		
 
-				// }
-				SDL_RenderPresent(gRenderer);
-				ControlDinoFrame(frame_Dinosaur);
-				ControlGolemFrame(frame_Enemy1);
-				ControlGolemFrame(frame_Enemy2);
-				ControlBatFrame(frame_Enemy3);
-				//ControlGateFrame(frame_Gate);
-			}
-		}
-	}
-
-}   
-// void Game::Render(){
-// 	//Main loop flag
-// 			bool quit = false;
-
-// 			//Event handler
-// 			SDL_Event e;
-
-// 			//While application is running
-// 			while( !quit )
-// 			{
-// 				//Handle events on queue
-// 				while( SDL_PollEvent( &e ) != 0 )
-// 				{
-// 					//User requests quit
-// 					if( e.type == SDL_QUIT )
-// 					{
-// 						quit = true;
-// 					}
-// 				}
-
-// 				//Clear screen
-							
-				
-// 				SDL_RenderClear( gRenderer );
-				
-				
-				
-				
-// 				//Render texture to screen
-// 				SDL_RenderCopy( gRenderer, gTexture, nullptr, nullptr );
-// 				LoadMenuTexture.Render(SCREEN_WIDTH,SCREEN_HEIGHT,gRenderer,nullptr);
-				
-// 				LoadPlayTexture.Render(350,200,gRenderer,nullptr);
-// 				LoadExitTexture.Render(350,398,gRenderer,nullptr);
-// 				// LoadPauseTexture.Render(SCREEN_WIDTH/2-250,SCREEN_HEIGHT/2,gRenderer);
-// 				// LoadContinueTexture.Render(SCREEN_WIDTH/2-250,SCREEN_HEIGHT/2-200,gRenderer);
-
-// 				//Render texture to screen
-				
-
-// 				//Update screen
-// 				SDL_RenderPresent( gRenderer ); 
-// 			}
-// }
 void Game::Close(){
 	LoadMenuTexture.free();
+	gInstructionTexture.free();
     LoadPlayTexture.free();
+	LoadHelpTexture.free();
     LoadExitTexture.free();
     LoadPauseTexture.free();
     LoadContinueTexture.free();

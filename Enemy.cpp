@@ -21,43 +21,27 @@ void Enemy:: GenerateGolem(Enemy& enemy,
 {
     enemy.LoadFromProperties(gRenderer);
     for (int i=0; i<12; i++) {
-        gEnemyClips[i].x = i*57;
+        gEnemyClips[i].x = 57 * i;
         gEnemyClips[i].y = 0;
         gEnemyClips[i].w = 57;
         gEnemyClips[i].h = 57;
     }
 }
-//tao ra cong?
-void Enemy::GenerateGate(Enemy& enemy,
-    SDL_Rect*gGateClips,
-    SDL_Renderer* gRenderer)
-{   
-    enemy.LoadFromProperties(gRenderer);
-    for (int i = 0; i < 16; i++) {
-		gGateClips[i].x = i * 182;
-		gGateClips[i].y = 0;
-		gGateClips[i].w = 182;
-		gGateClips[i].h = 206;
-	}
-}    
+
 Enemy::Enemy(int _type)
 {
     posX = 0;
     posY = 0;
+
     eWidth = 0;
     eHeight = 0;
+
     type = _type;
     if (type == IN_AIR_ENEMY)
     {
         pathID = "src/imgs/enemy/bat.png";
         posX = rand() % (SCREEN_WIDTH + Enemy_position_range) + SCREEN_WIDTH;
         posY = rand() % (Enemy_max_height - Enemy_min_height + 1) + Enemy_min_height;
-    }
-    else if (type == GATE)
-    {
-        pathID = "src/imgs/enemy/gate.png";
-        posX = SCREEN_WIDTH;
-        posY = GROUND - 20;
     }
     else if (type == GOLEM)
     {
@@ -135,9 +119,7 @@ void Enemy::LoadFromProperties(SDL_Renderer* gRenderer)
 }
 void Enemy::Move(int acceleration)
 {
-    if (type == GATE)
-        posX += -(2 + acceleration);
-    else posX += -(ENEMY_SPEED + acceleration); 
+    posX += -(ENEMY_SPEED + acceleration); 
     if (posX + MAX_ENEMY_WIDTH <= 0)
     {
         posX = rand() % (SCREEN_WIDTH + Enemy_position_range) + SCREEN_WIDTH;
@@ -145,7 +127,7 @@ void Enemy::Move(int acceleration)
         if (type == IN_AIR_ENEMY)
         {
             posY = rand() % (Enemy_max_height - Enemy_min_height + 1) + Enemy_min_height;
-        }
+        }   
     }
 }
 void Enemy::Render(SDL_Renderer* gRenderer, SDL_Rect* currentClip)
@@ -153,20 +135,19 @@ void Enemy::Render(SDL_Renderer* gRenderer, SDL_Rect* currentClip)
     SDL_Rect renderSpace = { posX, posY, eWidth, eHeight};
     if (currentClip != nullptr)
     {
-        if (type == GOLEM) {
+        if (type == GOLEM) 
+        {
             renderSpace.w = currentClip->w + 20;
-            renderSpace.h = currentClip->h + 20;
+			renderSpace.h = currentClip->h + 20;
         }
-        else if (type == GATE) {
-            renderSpace.w = 120;
-            renderSpace.h = 120;
-        }
-        else {
+        else 
+        {
             renderSpace.w = currentClip->w;
             renderSpace.h = currentClip->h;
-        }
+        }   
+        
     }
-    if (type == GOLEM) SDL_RenderCopyEx(gRenderer, EnemyTexture, currentClip, &renderSpace, 0,NULL,SDL_FLIP_HORIZONTAL);
+    if (type == GOLEM) SDL_RenderCopyEx(gRenderer, EnemyTexture, currentClip, &renderSpace, 0, NULL, SDL_FLIP_HORIZONTAL);
     else SDL_RenderCopy(gRenderer, EnemyTexture, currentClip, &renderSpace);
 }
 

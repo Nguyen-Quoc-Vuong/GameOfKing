@@ -9,5 +9,5 @@ public:
 	void HandleEvents();
 	bool LoadMedia();	
 	void Close();
-	//void render();
+	
 };

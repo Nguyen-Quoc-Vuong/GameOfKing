@@ -84,7 +84,7 @@ void RenderScrollingBackground(vector <double>& offsetSpeed,
 
 void RenderScrollingGround(int& speed,
 	const int acceleration,
-	LTexture gGroundTexture,
+	LTexture& gGroundTexture,
 	SDL_Renderer* gRenderer) //acceleration : tăng tốc
 {
 	speed -= GROUND_SPEED + acceleration;
@@ -126,35 +126,75 @@ void HandlePlayButton(SDL_Event* e,
 		PlayButton.currentMenu = BUTTON_MOUSE_OUT;
 	}
 }
-bool soundOn = true;
-void HandleSoundButton(SDL_Event* e,
-	Button& SoundButton,
-	Mix_Chunk* gClick) {
-	if (SoundButton.InSide(e, COMMON_BUTTON))
+
+void HandleHelpButton(SDL_Event* e,
+    SDL_Rect(&gBackButton)[BUTTON_TOTAL],
+    Button& HelpButton,
+    Button& BackButton,
+    LTexture& gInstructionTexture,
+    LTexture& gBackButtonTexture,
+    SDL_Renderer* gRenderer,
+    bool& Quit_game,
+    Mix_Chunk* gClick){
+		if (HelpButton.InSide(e, COMMON_BUTTON))
 	{
 		switch (e->type)
 		{
+		case SDL_MOUSEMOTION:
+			HelpButton.currentMenu = BUTTON_MOUSE_OVER;
+			break;
 		case SDL_MOUSEBUTTONDOWN:
-			if (!soundOn) {
-				soundOn = true;
-				Mix_PlayChannel(MIX_CHANNEL, gClick, 0);
-				Mix_ResumeMusic();
-				SoundButton.currentMenu = BUTTON_MOUSE_OUT;
-				break;
+			HelpButton.currentMenu = BUTTON_MOUSE_OVER;
+			Mix_PlayChannel(MIX_CHANNEL, gClick, NOT_REPEATITIVE);
+
+			bool ReadDone = false;
+			while (!ReadDone)
+			{
+				do
+				{
+					if (e->type == SDL_QUIT)
+					{	Game q;
+						q.Close();
+						ReadDone = true;
+						Quit_game = true;
+						
+					}
+
+					else if (BackButton.InSide(e, COMMON_BUTTON))
+					{
+						switch (e->type)
+						{
+						case SDL_MOUSEMOTION:
+							BackButton.currentMenu = BUTTON_MOUSE_OVER;
+							break;
+						case SDL_MOUSEBUTTONDOWN:
+							BackButton.currentMenu = BUTTON_MOUSE_OVER;
+							Mix_PlayChannel(MIX_CHANNEL, gClick, NOT_REPEATITIVE);
+							ReadDone = true;
+							break;
+						}
+					}
+					else
+					{
+						BackButton.currentMenu = BUTTON_MOUSE_OUT;
+					}
+
+					gInstructionTexture.Render(0, 0, gRenderer);
+
+					SDL_Rect* currentClip_Back = &gBackButton[BackButton.currentMenu];
+					BackButton.Render(currentClip_Back, gRenderer, gBackButtonTexture);
+
+					SDL_RenderPresent(gRenderer);
+				} while (SDL_PollEvent(e) != 0 && e->type == SDL_MOUSEBUTTONDOWN || e->type == SDL_MOUSEMOTION);
 			}
-			else if (soundOn){
-				soundOn = false;
-				Mix_PlayChannel(MIX_CHANNEL, gClick, 0);
-				Mix_PauseMusic();
-				SoundButton.currentMenu = BUTTON_MOUSE_OVER;
-				break;
-			}
+			break;
 		}
 	}
-	if (soundOn)
-		SoundButton.currentMenu = BUTTON_MOUSE_OUT;
-}
-
+	else
+	{
+		HelpButton.currentMenu = BUTTON_MOUSE_OUT;
+	}
+	}
 void HandleExitButton(SDL_Event* e,
     Button& ExitButton,
     bool& Quit,
@@ -180,8 +220,8 @@ void HandleExitButton(SDL_Event* e,
 		ExitButton.currentMenu = BUTTON_MOUSE_OUT;
 	}
 }
-void HandleContinueButton(Button ContinueButton,
-    LTexture gContinueButtonTexture,
+void HandleContinueButton(Button& ContinueButton,
+    LTexture& gContinueButtonTexture,
     SDL_Event* e,
     SDL_Renderer* gRenderer,
     SDL_Rect(&gContinueButton)[BUTTON_TOTAL],
@@ -226,8 +266,8 @@ void HandlePauseButton(SDL_Event* e,
     SDL_Renderer* gRenderer,
     SDL_Rect(&gContinueButton)[BUTTON_TOTAL],
     Button& PauseButton,
-    Button ContinueButton,
-    LTexture gContinueButtonTexture,
+    Button& ContinueButton,
+    LTexture& gContinueButtonTexture,
     bool& game_state,
 	Mix_Chunk *gClick
     )
@@ -292,16 +332,11 @@ bool CheckColission(Dinosaur dinosaur,
 
 bool CheckEnemyColission(Dinosaur dinosaur,
     Enemy enemy1,
-    Enemy enemy2,
     Enemy enemy3,
     SDL_Rect* dino_clip,
-    SDL_Rect* enemy_clip1, SDL_Rect* enemy_clip2, SDL_Rect* enemy_clip3)
+    SDL_Rect* enemy_clip1, SDL_Rect* enemy_clip3)
 {
 	if (CheckColission(dinosaur, dino_clip, enemy1, enemy_clip1))
-	{
-		return true;
-	}
-	if (CheckColission(dinosaur, dino_clip, enemy2, enemy_clip2))
 	{
 		return true;
 	}
@@ -348,8 +383,8 @@ void ControlGateFrame(int &frame)
 	}
 }
 
-void DrawPlayerScore(LTexture gTextTexture,
-	LTexture gScoreTexture,
+void DrawPlayerScore(LTexture& gTextTexture,
+	LTexture& gScoreTexture,
 	SDL_Color textColor,
 	SDL_Renderer *gRenderer,
 	TTF_Font *gFont, 
@@ -362,8 +397,8 @@ void DrawPlayerScore(LTexture gTextTexture,
 	}
 }
 
-void DrawPlayerHighScore(LTexture gTextTexture,
-	LTexture gHighScoreTexture, 
+void DrawPlayerHighScore(LTexture& gTextTexture,
+	LTexture& gHighScoreTexture, 
 	SDL_Color textColor, 
 	SDL_Renderer* gRenderer, 
 	TTF_Font* gFont, 
@@ -376,8 +411,8 @@ void DrawPlayerHighScore(LTexture gTextTexture,
 	}
 }
 
-void DrawDeath(LTexture gTextTexture,
-	LTexture gDeathTexture,
+void DrawDeath(LTexture& gTextTexture,
+	LTexture& gDeathTexture,
 	SDL_Color textColor,
 	SDL_Renderer* gRenderer,
 	TTF_Font* gFont,
@@ -390,7 +425,7 @@ void DrawDeath(LTexture gTextTexture,
 	}
 }
 
-void DrawEndGameSelection(LTexture gLoseTexture,
+void DrawEndGameSelection(LTexture& gLoseTexture,
 	SDL_Event *e,
 	SDL_Renderer *gRenderer,
 	bool &Play_Again)

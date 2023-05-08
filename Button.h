@@ -17,7 +17,7 @@ public:
 
     bool InSide (SDL_Event *e, int size);
 
-    void Render(SDL_Rect* currentClip, SDL_Renderer* gRenderer, LTexture gButtonTexture);
+    void Render(SDL_Rect* currentClip, SDL_Renderer* gRenderer, LTexture &gButtonTexture);
 
 private:
     SDL_Point position;    

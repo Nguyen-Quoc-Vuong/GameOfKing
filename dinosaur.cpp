@@ -3,8 +3,7 @@
 #include "Game_Base.h"
 int minHeight = 360;
 
-Dinosaur::Dinosaur (int x_){
-    x = x_;
+Dinosaur::Dinosaur() {
 	posX = SCREEN_WIDTH - 700;
 	posY = GROUND;
 	pathID = "src/imgs/dinosaur/dino.png";
@@ -61,7 +60,7 @@ void Dinosaur::Move()
 }
 void Dinosaur::GenerateDinosaur(Dinosaur& dinosaur,SDL_Rect* gDinosaurClips, SDL_Renderer* gRenderer) {
 	dinosaur.LoadFromProperties(gRenderer);
-	for (int i = 0; i < 18; i++) {
+	for (int i = 0; i < 6; i++) {
 		gDinosaurClips[i].x = 57 * i;
 		gDinosaurClips[i].y = 0;
 		gDinosaurClips[i].w = 57;

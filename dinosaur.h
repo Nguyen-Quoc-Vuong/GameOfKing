@@ -16,7 +16,7 @@ public:
 	static const int JUMP_SPEED = 8;
 	static const int FALL_SPEED = 8;
 	string pathID;
-	Dinosaur(int x_);
+	Dinosaur();
 	~Dinosaur() {}
 	bool OnGround();
 

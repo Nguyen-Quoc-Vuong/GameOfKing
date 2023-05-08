@@ -5,10 +5,10 @@ OBJS = main.cpp LTexture.cpp Button.cpp Game_Base.cpp Game.cpp Game_Utils.cpp di
 CC = g++
 
 #INCLUDE_PATHS specifies the additional include paths we'll need
-INCLUDE_PATHS = -IC:\Users\Admin\Desktop\Game\src\SDL2-2.26.5\x86_64-w64-mingw32\include\SDL2
+INCLUDE_PATHS = -IC:\Users\Admin\Desktop\x86_64-w64-mingw32\include\SDL2
 
 #LIBRARY_PATHS specifies the additional library paths we'll need
-LIBRARY_PATHS = -LC:\Users\Admin\Desktop\Game\src\SDL2-2.26.5\x86_64-w64-mingw32\lib
+LIBRARY_PATHS = -LC:\Users\Admin\Desktop\x86_64-w64-mingw32\lib
 
 #COMPILER_FLAGS specifies the additional compilation options we're using
 # -w suppresses all warnings
@@ -19,7 +19,7 @@ LIBRARY_PATHS = -LC:\Users\Admin\Desktop\Game\src\SDL2-2.26.5\x86_64-w64-mingw32
 LINKER_FLAGS = -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 
 #OBJ_NAME specifies the name of our exectuable
-OBJ_NAME = Dino
+OBJ_NAME = Dino.exe
 
 #This is the target that compiles our executable
 all : $(OBJS)
