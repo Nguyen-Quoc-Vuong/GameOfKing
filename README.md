@@ -1,28 +1,29 @@
-# Monster Escape
+# Dinosaur Run
 
-  Monster Escape is a game using SDL2 and C++, based on a Google game called Dino Runner which appears when you suddenly lose internet access.
-## About
+  Dinosaur Run là 1 game sử dụng SDL2 và C++, dựa trên một trò chơi của Google xuất hiện khi bạn đột nhiên mất quyền truy cập internet
+## Lí do chọn Game
 
-  If you enjoy endless run like Dino Runner but crave
- for exceptional graphics and a bit of diversity in the
- gameplay mechanic, Monster Escape would be highly 
-recommended.
+  Tôi thích thể loại game chạy bất tận nhưng muốn
+  cho đồ họa đặc biệt và một chút đa dạng trong
+  cơ chế chơi trò chơi.
 
-
-
-## Features
+## Các chức năng chính
 
 
-* **Highscore and death record**
-* **Portals to distinct realms that responds randomly**
-* **A wide range of character selections**
-* **Possibility to pause game**
+* Hiện điểm kỷ lục và số lần chết 
+* Có thể pause game
+* Ăn item được cộng điểm
+* Thay đổi map khi đủ 100 điểm 
+<!-- * **A wide range of character selections** -->
 
+## Cách chơi
 
-## How to play
+* Nhấn hoặc giữ ↑ để nhảy và tránh chướng ngại vật
+* Ấn SPACE để chơi lại hoặc ESC để thoát game
 
-* **Press and release Up Arrow ↑ to jump and dodge obstacles**
-* **Press SPACE to play again**
-
-## References
-[Dino In Jungle](https://github.com/Flushz/Dino_in_Zungle)
+## Hướng cải thiện tiếp theo
+* Muốn tạo ra item ăn xong phun lửa hủy diệt quái vật
+* 
+## Tài liệu tham khảo
+Code: Lazyfoo
+Map: Dino_In_Jungle
