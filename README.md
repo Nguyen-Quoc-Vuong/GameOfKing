@@ -13,8 +13,7 @@
 * Hiện điểm kỷ lục và số lần chết 
 * Có thể pause game
 * Ăn item được cộng điểm
-* Thay đổi map khi đủ 100 điểm 
-<!-- * **A wide range of character selections** -->
+* Thay đổi map khi đủ 500 điểm 
 
 ## Cách chơi
 
