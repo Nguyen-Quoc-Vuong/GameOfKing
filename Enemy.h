@@ -21,14 +21,23 @@ public:
 	~Enemy();
 
 	void LoadFromFile(string path, SDL_Renderer* gRenderer);
+
 	void LoadFromProperties(SDL_Renderer* gRenderer);
+
 	void GenerateBat(Enemy& enemy,
 		SDL_Rect* gEnemyClips,
 		SDL_Renderer* gRenderer);//dơi
+
 	void GenerateGolem(Enemy& enemy,
 		SDL_Rect(&gEnemyClips)[12],
 		SDL_Renderer* gRenderer);//quái vật
+
+	void GenerateItem(Enemy& enemy,
+		SDL_Rect* gItemClips,
+		SDL_Renderer* gRenderer);//item
+
 	void Move(int acceleration);//tang toc
+	
 	void Render(SDL_Renderer* gRenderer, SDL_Rect* currentClip = nullptr);
 
 	int GetType();

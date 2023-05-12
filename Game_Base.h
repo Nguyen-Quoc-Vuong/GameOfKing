@@ -32,6 +32,7 @@
 #define MAX_ENEMY_WIDTH 100
 
 #define SLOW_FRAME_DINO 2
+#define SLOW_FRAME_ITEM 3
 #define SLOW_FRAME_ENEMY 4
 
 #define IS_REPEATITIVE -1
@@ -43,7 +44,7 @@
 #define FRAME_INCREASEMENT 1
 
 #define IN_AIR_ENEMY  1
-
+#define ITEM 0
 #define GOLEM 2
 #define DINO  0
 #define MINOTOUR1  1
@@ -68,6 +69,9 @@ const int PAUSE_BUTTON_POSX = 31;
 const int PAUSE_BUTTON_POSY = 29;
 const int CONTINUE_BUTTON_POSX = 31;
 const int CONTINUE_BUTTON_POSY = 29;
+const int SOUND_BUTTON_POSX = 31;
+const int SOUND_BUTTON_POSY = 89;
+
 const int BACK_BUTTON_POSX = 31;
 const int BACK_BUTTON_POSY = 29;
 

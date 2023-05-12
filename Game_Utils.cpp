@@ -48,7 +48,7 @@ int UpdateGameTimeAndScore(int& time,
 	{
 		time = 0;
 	}
-	if (time % 5 == 0)
+	if (time % 20 == 0)
 	{
 		score += SCORE_INCREASEMENT;
 	}
@@ -82,18 +82,7 @@ void RenderScrollingBackground(vector <double>& offsetSpeed,
 	}
 }
 
-void RenderScrollingGround(int& speed,
-	const int acceleration,
-	LTexture& gGroundTexture,
-	SDL_Renderer* gRenderer) //acceleration : tăng tốc
-{
-	speed -= GROUND_SPEED + acceleration;
-	if (speed < -gGroundTexture.GetWidth()){
-		speed = 0;
-	}
-	gGroundTexture.Render(speed,0,gRenderer);
-	gGroundTexture.Render(speed + gGroundTexture.GetWidth(),0,gRenderer);
-}
+
 void HandlePlayButton(SDL_Event* e,
     Button& PlayButton,
     bool& QuitMenu,
@@ -295,6 +284,35 @@ void HandlePauseButton(SDL_Event* e,
 		PauseButton.currentMenu = BUTTON_MOUSE_OUT;
 	}
 	}	
+bool soundOn= true;
+void HandleSoundButton(SDL_Event* e,
+    Button& SoundButton,
+    Mix_Chunk* gClick)
+	{
+		if (SoundButton.InSide(e, COMMON_BUTTON))
+		{
+			switch (e->type)
+		{
+		case SDL_MOUSEBUTTONDOWN:
+			if (!soundOn) {
+				soundOn = true;
+				Mix_PlayChannel(MIX_CHANNEL, gClick, 0);
+				Mix_ResumeMusic();
+				SoundButton.currentMenu = BUTTON_MOUSE_OUT;
+				break;
+			}
+			else if (soundOn){
+				soundOn = false;
+				Mix_PlayChannel(MIX_CHANNEL, gClick, 0);
+				Mix_PauseMusic();
+				SoundButton.currentMenu = BUTTON_MOUSE_OVER;
+				break;
+			}
+		}
+	}
+	if (soundOn)
+		SoundButton.currentMenu = BUTTON_MOUSE_OUT;
+		}
 
 bool CheckColission(Dinosaur dinosaur,
     SDL_Rect* dino_clip,
@@ -374,7 +392,7 @@ void ControlGolemFrame(int &frame)
 	}
 }
 
-void ControlGateFrame(int &frame)
+void ControlItemFrame(int &frame)
 {
 	frame += FRAME_INCREASEMENT;
 	if (frame / 5 >= 12)

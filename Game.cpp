@@ -18,7 +18,7 @@ LTexture LoadPauseTexture;
 LTexture LoadContinueTexture;
 LTexture LoadLoseTexture;
 LTexture LoadBackTexture;
-// LTexture LoadSoundTexture;
+LTexture LoadSoundTexture;
 LTexture LoadText1Texture;
 LTexture LoadText2Texture;
 LTexture LoadText3Texture;
@@ -28,6 +28,7 @@ LTexture LoadHighScoreTexture;
 LTexture LoadGroundTexture;
 LTexture BackgroundTexture[BACKGROUND_LAYER];
 LTexture BackgroundTexture1[BACKGROUND_LAYER];
+LTexture BackgroundTexture2[BACKGROUND_LAYER];
 LTexture gText1Texture;
 LTexture gText2Texture;
 LTexture gText3Texture;
@@ -48,9 +49,9 @@ SDL_Rect LoadContinue[BUTTON_TOTAL];
 SDL_Rect gDinosaurClips[RUNNING_FRAMES];
 SDL_Rect gEnemyClips3[FLYING_FRAMES];
 SDL_Rect gEnemyClips1[12];
-SDL_Rect gEnemyClipsGolem[6];
+SDL_Rect gItemClips[16];
 
-SDL_Color textColor = {0,0,0};
+SDL_Color textColor = {255,0,0};
 TTF_Font* gFont = nullptr;
 Mix_Music* gMusic = nullptr;
 Mix_Music* gMenuMusic = nullptr;
@@ -64,6 +65,7 @@ Button ExitButton(EXIT_BUTTON_POSX, EXIT_BUTTON_POSY);
 Button BackButton(BACK_BUTTON_POSX, BACK_BUTTON_POSY);
 Button PauseButton(PAUSE_BUTTON_POSX, PAUSE_BUTTON_POSY);
 Button ContinueButton(CONTINUE_BUTTON_POSX, CONTINUE_BUTTON_POSY);
+Button SoundButton(SOUND_BUTTON_POSX, SOUND_BUTTON_POSY);
 
 Dinosaur dinosaur;
 
@@ -80,15 +82,15 @@ const string SCENCE1[BACKGROUND_LAYER] = {
 };
 
 const std::string SCENCE2[BACKGROUND_LAYER] = {
-	"src/imgs/background/Scence3_01.png",
-	"src/imgs/background/Scence3_02.png",
-	"src/imgs/background/Scence3_03.png",
-	"src/imgs/background/Scence3_04.png",
-	"src/imgs/background/Scence3_05.png",
-	"src/imgs/background/Scence3_06.png",
-	"src/imgs/background/Scence3_07.png",
-	"src/imgs/background/Scence3_08.png",
-	"src/imgs/background/Scence3_09.png",
+	"src/imgs/background/Scence_01.png",
+	"src/imgs/background/Scence_02.png",
+	"src/imgs/background/Scence_03.png",
+	"src/imgs/background/Scence_04.png",
+	"src/imgs/background/Scence_05.png",
+	"src/imgs/background/Scence_06.png",
+	"src/imgs/background/Scence_07.png",
+	"src/imgs/background/Scence_08.png",
+	"src/imgs/background/Scence_09.png",
 };
 
 bool Game::init()
@@ -218,7 +220,7 @@ bool Game::LoadMedia(){
 				cout << "Failed to load menu image" << endl;
 				success = false;
 			}
-			if (!gInstructionTexture.LoadFromFile("src/imgs/background/instruction.png", gRenderer))
+			if (!gInstructionTexture.LoadFromFile("src/imgs/background/instruction1.png", gRenderer))
 			{
 				cout << "Failed to load instruction image" << endl;
 				success = false;
@@ -308,10 +310,31 @@ bool Game::LoadMedia(){
 					LoadContinue[i].h = 57;
 				}
 			}
-	
+	if (!LoadSoundTexture.LoadFromFile("src/imgs/button/big_button/sound.png", gRenderer ))
+	{
+		cout << "Failed to load instruction image" << endl;
+		success = false;
+	}
+	else {
+		for(int i=0; i< BUTTON_TOTAL; ++i) 
+		{
+			LoadSound[i].x  = 57 * i;
+			LoadSound[i].y = 0;
+			LoadSound[i].w = 57;
+			LoadSound[i].h = 57;
+		}
+	}
 	for (int i=0; i < BACKGROUND_LAYER; ++i)
 	{
 		if(!BackgroundTexture1[i].LoadFromFile(SCENCE1[i].c_str(), gRenderer))
+		{
+			cout<<"Failed to load background image" <<endl;
+			success = false;
+		}
+	}
+	for (int i=0; i < BACKGROUND_LAYER; i++)
+	{
+		if (!BackgroundTexture2[i].LoadFromFile(SCENCE2[i].c_str(), gRenderer))
 		{
 			cout<<"Failed to load background image" <<endl;
 			success = false;
@@ -322,12 +345,11 @@ bool Game::LoadMedia(){
 		cout<<  "Failed to load ground image" << endl;
 		success = false;
 	}
-	if (!LoadLoseTexture.LoadFromFile( "src/imgs/background/lose.png", gRenderer))
+	if (!LoadLoseTexture.LoadFromFile( "src/imgs/background/lose2.png", gRenderer))
 	{
 		cout<< "Failed to load lose imgae"<<endl;
 		success = false;
 	}
-
 	}
 	}
 	
@@ -360,6 +382,7 @@ void Game::HandleEvents(){
 			HandleExitButton(&e_mouse, ExitButton, Quit_Menu, gClick);
 			
 			
+			
 		}
 		LoadMenuTexture.Render(0, 0, gRenderer);
 
@@ -373,16 +396,20 @@ void Game::HandleEvents(){
 		SDL_Rect* currentClip_Exit = &LoadExit[ExitButton.currentMenu];
 		ExitButton.Render(currentClip_Exit, gRenderer, LoadExitTexture);
 
+		
 		SDL_RenderPresent(gRenderer);
 
 
 	}
 	int deathCount = 0;
-	while (Play_Again){
-		
+	while (Play_Again)
+	{		
 		for (int i = 0; i < 9; i++) {
 			BackgroundTexture[i] = BackgroundTexture1[i];
 		}
+	bool winter = false;
+	bool night = true;
+	bool createItem = false;
 	srand(time(NULL));
 	int time = 0;
 	int score = 0;
@@ -391,25 +418,29 @@ void Game::HandleEvents(){
 	int frame_Enemy = 0;
 	int frame_Enemy1 = 0;
 	int frame_Enemy3 = 0;
+	int frame_Item = 0;
 	int count = 0;
 	string highscore = GetHighScoreFromFile("high_score.txt");
-		SDL_Event e;
-	 	Enemy enemy1(GOLEM);
-		Enemy enemy3(IN_AIR_ENEMY);
+	SDL_Event e;
+	Enemy enemy1(GOLEM);
+	Enemy enemy3(IN_AIR_ENEMY);
+	Enemy item(ITEM);
 
 		Mix_PlayMusic(gMusic, IS_REPEATITIVE);
 		enemy1.GenerateGolem(enemy1, gEnemyClips1, gRenderer);
-		
 		enemy3.GenerateBat(enemy3, gEnemyClips3, gRenderer);	
+		item.GenerateItem(item, gItemClips, gRenderer);
+
 		dinosaur.GenerateDinosaur(dinosaur, gDinosaurClips, gRenderer);
 
 		int OffsetSpeed_Ground = BASE_OFFSET_SPEED;
 		vector <double> OffsetSpeed_Bkgr(BACKGROUND_LAYER, BASE_OFFSET_SPEED);
 		bool Quit = false;
 		bool Game_State = true;
-		while (!Quit){
-			if (Game_State) {
-				
+		while (!Quit)
+		{
+			if (Game_State) 
+			{	
 				 UpdateGameTimeAndScore(time, acceleration, score);
 				while (SDL_PollEvent(&e) != 0){
 					if (e.type == SDL_QUIT) {
@@ -417,20 +448,34 @@ void Game::HandleEvents(){
 						Play_Again = false;
 					}
 
-					else HandlePauseButton(&e,gRenderer,LoadContinue,
+					else {
+						HandlePauseButton(&e,gRenderer,LoadContinue,
 						PauseButton,ContinueButton,LoadContinueTexture,Game_State,gClick);
+						HandleSoundButton(&e, SoundButton, gClick );
+						}
 
 					dinosaur.HandleEvent(e, gJump);	
 				}
 				SDL_SetRenderDrawColor(gRenderer,0xFF,0xFF,0xFF,0xFF);
 				SDL_RenderClear(gRenderer);
-	
+				if (night) {
 					enemy1.GenerateGolem(enemy1, gEnemyClips1, gRenderer);
+					enemy3.GenerateBat(enemy3, gEnemyClips3, gRenderer);
 					enemy1.pathID = "src/imgs/enemy/golem.png";
-				
 					RenderScrollingBackground(OffsetSpeed_Bkgr, BackgroundTexture1, gRenderer);
-					//RenderScrollingGround(OffsetSpeed_Ground, acceleration, LoadGroundTexture, gRenderer);
+				}
+				else if (winter) {
+					enemy1.GenerateGolem(enemy1, gEnemyClips1, gRenderer);
+					enemy3.GenerateBat(enemy3, gEnemyClips3, gRenderer);
+					enemy1.pathID = "src/imgs/enemy/golem3.png";
+					RenderScrollingBackground(OffsetSpeed_Bkgr, BackgroundTexture2, gRenderer);
+				}
 				
+				
+				if (score >= 500 && score % 500 == 0 )
+				{
+					createItem = true;
+				}
 				dinosaur.Move();
 				SDL_Rect* currentClip_Dinosaur = nullptr;
 				if (dinosaur.OnGround())
@@ -445,15 +490,36 @@ void Game::HandleEvents(){
 				}
 				SDL_Rect* currentClip_Enemy1 = &gEnemyClips1[frame_Enemy1 / SLOW_FRAME_ENEMY];
 				SDL_Rect* currentClip_Enemy3 = &gEnemyClips3[frame_Enemy3 / SLOW_FRAME_ENEMY];
-				
+				SDL_Rect* currentClip_Item = &gItemClips[frame_Item / SLOW_FRAME_ITEM];
+
 				enemy1.Move(acceleration);
 				enemy1.Render(gRenderer, currentClip_Enemy1);
 
 				enemy3.Move(acceleration);
-				enemy3.Render(gRenderer, currentClip_Enemy3);
+				enemy3.Render(gRenderer, currentClip_Enemy3);				
 				
+				if (createItem)
+				{	
+					if (night) 
+					{
+						item.GenerateItem(item, gItemClips, gRenderer);
+						item.pathID = "src/imgs/enemy/item2.png";
+					}
+					else if (winter)
+					{
+						item.GenerateItem(item, gItemClips, gRenderer);
+						item.pathID = "src/imgs/enemy/item3.png";
+					}
+					item.Move(acceleration);
+					item.Render(gRenderer, currentClip_Item);
+				}
+				
+							
 				SDL_Rect* currentClip_Pause = &LoadPause[PauseButton.currentMenu];
 				PauseButton.Render(currentClip_Pause, gRenderer, LoadPauseTexture);
+				
+				SDL_Rect* currentClip_Sound = &LoadSound[SoundButton.currentMenu];
+				SoundButton.Render(currentClip_Sound, gRenderer, LoadSoundTexture);
 
 				DrawPlayerScore(gText1Texture, gScoreTexture, textColor, gRenderer, gFont, score);
 				DrawPlayerHighScore(gText2Texture, gHighScoreTexture, textColor, gRenderer, gFont, highscore);
@@ -468,22 +534,59 @@ void Game::HandleEvents(){
 					Mix_PlayChannel(MIX_CHANNEL, gLose, NOT_REPEATITIVE);
 					UpdateHighScore("high_score.txt", score, highscore);
 					Quit = true;
-				}
-				SDL_RenderPresent(gRenderer);
-				ControlDinoFrame(frame_Dinosaur);
-				ControlGolemFrame(frame_Enemy1);
-				ControlBatFrame(frame_Enemy3);
-
-			}
-			
-		}
 					DrawEndGameSelection(LoadLoseTexture, &e, gRenderer, Play_Again);
 					if (!Play_Again)
 					{
 						enemy1.~Enemy();
 						enemy3.~Enemy();
+						item.~Enemy();
 					}
-			}	
+				}
+				
+
+				if(CheckColission(dinosaur, currentClip_Dinosaur, item, currentClip_Item) )
+				{
+					createItem = false;
+					item.posX = -100;
+					score+=50;
+				}
+					
+					if (winter && score >=300) {
+						winter = false;
+						night = true;
+						RenderScrollingBackground(OffsetSpeed_Bkgr, BackgroundTexture1, gRenderer);
+						SDL_RenderPresent(gRenderer);
+						SDL_RenderClear(gRenderer);
+						SDL_Delay(38);
+						
+						ControlDinoFrame(frame_Dinosaur);
+						ControlBatFrame(frame_Enemy3);
+						ControlGolemFrame(frame_Enemy1);
+						ControlItemFrame(frame_Item);
+					}
+					else if (night && score >=100 && score <300) {
+						winter = true;;
+						night = false;
+						RenderScrollingBackground(OffsetSpeed_Bkgr, BackgroundTexture2, gRenderer);
+						SDL_RenderPresent(gRenderer);
+						SDL_RenderClear(gRenderer);
+						SDL_Delay(38);
+					
+						ControlDinoFrame(frame_Dinosaur);
+						ControlBatFrame(frame_Enemy3);
+						ControlGolemFrame(frame_Enemy1);
+						ControlItemFrame(frame_Item);
+					}
+				
+
+				SDL_RenderPresent(gRenderer);
+				ControlDinoFrame(frame_Dinosaur);
+				ControlGolemFrame(frame_Enemy1);
+				ControlBatFrame(frame_Enemy3);
+				ControlItemFrame(frame_Item);
+			}		
+		}					
+	}	
 }
 		
 
@@ -498,16 +601,20 @@ void Game::Close(){
 	LoadGroundTexture.free();
 	LoadScoreTexture.free();
 	LoadBackTexture.free();
+	LoadSoundTexture.free();
 	LoadLoseTexture.free();
 	LoadText1Texture.free();
 	LoadText2Texture.free();
 	LoadText3Texture.free();
-	LoadScoreTexture.free();
 	LoadHighScoreTexture.free();
 	LoadDeathCountTexture.free();
 	for (int i = 0; i < BACKGROUND_LAYER; ++i)
 	{
 		BackgroundTexture1[i].free();
+	}
+	for (int i = 0; i < BACKGROUND_LAYER; ++i)
+	{
+		BackgroundTexture2[i].free();
 	}
 	//Destroy Sound
 	Mix_FreeMusic(gMusic);

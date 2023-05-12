@@ -15,11 +15,7 @@ int UpdateGameTimeAndScore(int& time, int& speed, int& score);
 
 void RenderScrollingBackground(vector <double>& offsetSpeed,
     LTexture(&BackgroundTexture)[BACKGROUND_LAYER],
-    SDL_Renderer* gRenderer);
-void RenderScrollingGround(int& speed,
-	const int acceleration,
-	LTexture& gGroundTexture,
-	SDL_Renderer* gRenderer);    
+    SDL_Renderer* gRenderer);   
 void HandlePlayButton(SDL_Event* e,
     Button& PlayButton,
     bool& QuitMenu,
@@ -53,7 +49,10 @@ void HandlePauseButton(SDL_Event* e,
     Button& ContinueButton,
     LTexture& gContinueButtonTexture,
     bool& game_state,
-    Mix_Chunk* gClick);   
+    Mix_Chunk* gClick);  
+void HandleSoundButton(SDL_Event* e,
+    Button& SoundButton,
+    Mix_Chunk* gClick); 
 bool CheckColission(Dinosaur dinosaur,
     SDL_Rect* char_clip,
     Enemy enemy,
@@ -70,7 +69,7 @@ void ControlBatFrame(int &frame);
 
 void ControlGolemFrame(int &frame);
 
-void ControlGateFrame(int &frame);
+void ControlItemFrame(int &frame);
 
 void DrawPlayerScore(LTexture& gTextTexture,
 	LTexture& gScoreTexture,

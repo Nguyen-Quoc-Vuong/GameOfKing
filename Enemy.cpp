@@ -14,7 +14,7 @@ void Enemy:: GenerateBat(Enemy& enemy,
 		gEnemyClips[i].h = 30;
     }
 }    
-//tao ra quai vat
+
 void Enemy:: GenerateGolem(Enemy& enemy,
     SDL_Rect(&gEnemyClips)[12],
     SDL_Renderer* gRenderer)
@@ -28,6 +28,18 @@ void Enemy:: GenerateGolem(Enemy& enemy,
     }
 }
 
+void Enemy:: GenerateItem(Enemy& enemy,
+		SDL_Rect* gItemClips,
+		SDL_Renderer* gRenderer)
+{
+    enemy.LoadFromProperties(gRenderer);
+    for (int i=0; i< 16; i++) {
+        gItemClips[i].x = i * 182;
+        gItemClips[i].y = 0;
+		gItemClips[i].w = 182;
+		gItemClips[i].h = 206;
+    }
+}
 Enemy::Enemy(int _type)
 {
     posX = 0;
@@ -48,6 +60,12 @@ Enemy::Enemy(int _type)
         pathID = "src/imgs/enemy/golem.png";
         posX = rand() % (SCREEN_WIDTH + Enemy_position_range) + SCREEN_WIDTH;
         posY = GROUND + 8;
+    }
+    else if (type == ITEM)
+    {
+        pathID = "src/imgs/enemy/item2.png";
+        posX = rand() % (SCREEN_WIDTH + Enemy_position_range) + SCREEN_WIDTH;
+        posY = GROUND - 8 ;
     }
     EnemyTexture = nullptr;
 }
@@ -118,15 +136,16 @@ void Enemy::LoadFromProperties(SDL_Renderer* gRenderer)
     EnemyTexture = tmpTexture;
 }
 void Enemy::Move(int acceleration)
-{
-    posX += -(ENEMY_SPEED + acceleration); 
+{   
+    if (type == ITEM) posX += -(2+ acceleration);
+    else  posX += -(ENEMY_SPEED + acceleration); 
     if (posX + MAX_ENEMY_WIDTH <= 0)
     {
         posX = rand() % (SCREEN_WIDTH + Enemy_position_range) + SCREEN_WIDTH;
 
         if (type == IN_AIR_ENEMY)
         {
-            posY = rand() % (Enemy_max_height - Enemy_min_height + 1) + Enemy_min_height;
+            posY = rand() % (Enemy_max_height - Enemy_min_height + 2) + Enemy_min_height;
         }   
     }
 }
@@ -140,6 +159,11 @@ void Enemy::Render(SDL_Renderer* gRenderer, SDL_Rect* currentClip)
             renderSpace.w = currentClip->w + 20;
 			renderSpace.h = currentClip->h + 20;
         }
+        else if (type == ITEM) 
+        {
+            renderSpace.w = 140;
+            renderSpace.h = 140;
+        }
         else 
         {
             renderSpace.w = currentClip->w;
@@ -147,8 +171,8 @@ void Enemy::Render(SDL_Renderer* gRenderer, SDL_Rect* currentClip)
         }   
         
     }
-    if (type == GOLEM) SDL_RenderCopyEx(gRenderer, EnemyTexture, currentClip, &renderSpace, 0, NULL, SDL_FLIP_HORIZONTAL);
-    else SDL_RenderCopy(gRenderer, EnemyTexture, currentClip, &renderSpace);
+    if (type == GOLEM ) SDL_RenderCopyEx(gRenderer, EnemyTexture, currentClip, &renderSpace, 0, NULL, SDL_FLIP_HORIZONTAL);
+    else  SDL_RenderCopy(gRenderer, EnemyTexture, currentClip, &renderSpace);
 }
 
 int Enemy::GetType()
