@@ -13,7 +13,7 @@
 * Hiện điểm kỷ lục và số lần chết 
 * Có thể pause game, tắt âm thanh
 * Ăn item được cộng điểm
-
+* Thay đổi map khi đủ 100 điểm 
 ## Cách chơi
 
 * Nhấn hoặc giữ ↑ để nhảy và tránh chướng ngại vật
@@ -21,7 +21,7 @@
 
 ## Hướng cải thiện tiếp theo
 * Muốn tạo ra item ăn xong phun lửa hủy diệt quái vật
-* Thay đổi map khi đủ 500 điểm 
+
 ## Tài liệu tham khảo
 * Code: Lazyfoo
 * Map: Dino_In_Jungle
