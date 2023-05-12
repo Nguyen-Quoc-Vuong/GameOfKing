@@ -59,7 +59,7 @@ void Dinosaur::Move()
 	}
 }
 void Dinosaur::CreateDinosaur(Dinosaur& dinosaur,SDL_Rect* gDinosaurClips, SDL_Renderer* gRenderer) {
-	dinosaur.LoadFromProperties(gRenderer);
+	dinosaur.LoadFromPro(gRenderer);
 	for (int i = 0; i < 6; i++) {
 		gDinosaurClips[i].x = 57 * i;
 		gDinosaurClips[i].y = 0;
@@ -75,7 +75,7 @@ void Dinosaur::LoadFromFile(string path, SDL_Renderer* gRenderer) {
 	SDL_FreeSurface(tmpSurface);
 	DinosaurTexture = tmpTexture;
 }
-void Dinosaur::LoadFromProperties(SDL_Renderer* gRenderer) {
+void Dinosaur::LoadFromPro(SDL_Renderer* gRenderer) {
 	SDL_Texture* tmpTexture = nullptr;
 	SDL_Surface* tmpSurface = IMG_Load(pathID.c_str());
 	if (tmpSurface == nullptr)

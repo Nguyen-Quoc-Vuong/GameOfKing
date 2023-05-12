@@ -3,12 +3,10 @@
 #include"LTexture.h"
 #include"common.h"
 
-#define Enemy_max_height  300
-#define Enemy_min_height  330
+#define Enemymaxheight  300
+#define Enemyminheight  330
 
-#define Enemy_position_range 250
-#define ENEMY1_RANGE 100
-#define ENEMY3_RANGE 500
+#define Enemy_pos_range 250
 
 class Enemy
 {
@@ -16,13 +14,13 @@ public:
 	int type;
 	int posX, posY;
 	string pathID;
-	Enemy(int _type = 0);
+	Enemy(int v = 0);
 	
 	~Enemy();
 
 	void LoadFromFile(string path, SDL_Renderer* gRenderer);
 
-	void LoadFromProperties(SDL_Renderer* gRenderer);
+	void LoadFromPro(SDL_Renderer* gRenderer);
 
 	void CreateBat(Enemy& enemy,
 		SDL_Rect* gEnemyClips,
@@ -40,7 +38,7 @@ public:
 	
 	void Render(SDL_Renderer* gRenderer, SDL_Rect* currentClip = nullptr);
 
-	int GetType();
+	int Type();
 
 	int GetSpeed(const int& acceleration);
 

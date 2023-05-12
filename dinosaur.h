@@ -13,8 +13,8 @@ class Dinosaur
 public:
 	int x;
 	int posX, posY;
-	static const int JUMP_SPEED = 6;
-	static const int FALL_SPEED = 6;
+	const int JUMP_SPEED = 6;
+	const int FALL_SPEED = 6;
 	string pathID;
 	Dinosaur();
 	~Dinosaur() {}
@@ -26,7 +26,7 @@ public:
 		SDL_Renderer* gRenderer);
 	void Move();
 	void LoadFromFile(string path, SDL_Renderer* gRenderer);
-	void LoadFromProperties(SDL_Renderer* gRenderer);
+	void LoadFromPro(SDL_Renderer* gRenderer);
 	void Render(SDL_Renderer *gRenderer, SDL_Rect* currentClip = nullptr);
 
 	int GetPosX();

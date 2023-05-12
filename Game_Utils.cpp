@@ -321,7 +321,7 @@ bool Colission(Dinosaur dinosaur,
 	int right_ = dinosaur.GetPosX() + dino_clip->w - 10;
 	int top_ = dinosaur.GetPosY() + 10;
 	int bottom_ = dinosaur.GetPosY() + dino_clip->h - 10;
-	if (enemy.GetType() == IN_AIR_ENEMY)
+	if (enemy.Type() == AIR)
 	{
 		const int PIXEL_1 = 12;
 		const int PIXEL_2 = 18;

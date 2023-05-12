@@ -6,7 +6,7 @@ void Enemy:: CreateBat(Enemy& enemy,
     SDL_Rect *gEnemyClips,
     SDL_Renderer* gRenderer)
 {
-    enemy.LoadFromProperties(gRenderer);
+    enemy.LoadFromPro(gRenderer);
     for (int i=0 ; i < FLYING_FRAMES ; i++) {
         gEnemyClips[i].x = 43 * i;
 		gEnemyClips[i].y = 0;
@@ -19,7 +19,7 @@ void Enemy:: CreateGolem(Enemy& enemy,
     SDL_Rect(&gEnemyClips)[12],
     SDL_Renderer* gRenderer)
 {
-    enemy.LoadFromProperties(gRenderer);
+    enemy.LoadFromPro(gRenderer);
     for (int i=0; i<12; i++) {
         gEnemyClips[i].x = 57 * i;
         gEnemyClips[i].y = 0;
@@ -32,7 +32,7 @@ void Enemy:: CreateItem(Enemy& enemy,
 		SDL_Rect* gItemClips,
 		SDL_Renderer* gRenderer)
 {
-    enemy.LoadFromProperties(gRenderer);
+    enemy.LoadFromPro(gRenderer);
     for (int i=0; i< 16; i++) {
         gItemClips[i].x = i * 182;
         gItemClips[i].y = 0;
@@ -40,7 +40,7 @@ void Enemy:: CreateItem(Enemy& enemy,
 		gItemClips[i].h = 206;
     }
 }
-Enemy::Enemy(int _type)
+Enemy::Enemy(int v)
 {
     posX = 0;
     posY = 0;
@@ -48,23 +48,23 @@ Enemy::Enemy(int _type)
     eWidth = 0;
     eHeight = 0;
 
-    type = _type;
-    if (type == IN_AIR_ENEMY)
+    type = v;
+    if (type == AIR)
     {
         pathID = "src/imgs/enemy/bat.png";
-        posX = rand() % (SCREEN_WIDTH + Enemy_position_range) + SCREEN_WIDTH;
-        posY = rand() % (Enemy_max_height - Enemy_min_height + 1) + Enemy_min_height;
+        posX = rand() % (SCREEN_WIDTH + Enemy_pos_range) + SCREEN_WIDTH;
+        posY = rand() % (Enemymaxheight - Enemyminheight + 1) + Enemyminheight;
     }
     else if (type == GOLEM)
     {
         pathID = "src/imgs/enemy/golem.png";
-        posX = rand() % (SCREEN_WIDTH + Enemy_position_range) + SCREEN_WIDTH;
+        posX = rand() % (SCREEN_WIDTH + Enemy_pos_range) + SCREEN_WIDTH;
         posY = GROUND + 8;
     }
     else if (type == ITEM)
     {
         pathID = "src/imgs/enemy/item2.png";
-        posX = rand() % (SCREEN_WIDTH + Enemy_position_range) + SCREEN_WIDTH;
+        posX = rand() % (SCREEN_WIDTH + Enemy_pos_range) + SCREEN_WIDTH;
         posY = GROUND - 8 ;
     }
     EnemyTexture = nullptr;
@@ -109,7 +109,7 @@ void Enemy::LoadFromFile(string path, SDL_Renderer* gRenderer)
     }
      EnemyTexture = tmpTexture;
 }
-void Enemy::LoadFromProperties(SDL_Renderer* gRenderer)
+void Enemy::LoadFromPro(SDL_Renderer* gRenderer)
 {
     SDL_Texture* tmpTexture = nullptr;
     SDL_Surface* tmpSurface = IMG_Load(pathID.c_str());
@@ -135,17 +135,17 @@ void Enemy::LoadFromProperties(SDL_Renderer* gRenderer)
     }
     EnemyTexture = tmpTexture;
 }
-void Enemy::Move(int acceleration)
+void Enemy::Move(int acce)
 {   
-    if (type == ITEM) posX += -(2+ acceleration);
-    else  posX += -(ENEMY_SPEED + acceleration); 
+    if (type == ITEM) posX += -(2+ acce);
+    else  posX += -(ENEMY_SPEED + acce); 
     if (posX + MAX_ENEMY_WIDTH <= 0)
     {
-        posX = rand() % (SCREEN_WIDTH + Enemy_position_range) + SCREEN_WIDTH;
+        posX = rand() % (SCREEN_WIDTH + Enemy_pos_range) + SCREEN_WIDTH;
 
-        if (type == IN_AIR_ENEMY)
+        if (type == AIR)
         {
-            posY = rand() % (Enemy_max_height - Enemy_min_height + 2) + Enemy_min_height;
+            posY = rand() % (Enemymaxheight - Enemyminheight + 2) + Enemyminheight;
         }   
     }
 }
@@ -175,7 +175,7 @@ void Enemy::Render(SDL_Renderer* gRenderer, SDL_Rect* Clip)
     else  SDL_RenderCopy(gRenderer, EnemyTexture, Clip, &renderSpace);
 }
 
-int Enemy::GetType()
+int Enemy::Type()
 {
     return type;
 }

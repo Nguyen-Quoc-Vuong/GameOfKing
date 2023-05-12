@@ -17,7 +17,7 @@ Hướng cải thiện tiếp theo
 Muốn tạo ra item ăn xong phun lửa hủy diệt quái vật
 Thay đổi map khi đủ 500 điểm
 Tài liệu tham khảo
-Code: Lazyfoo 
+Code: Lazyfoo, ChatGPT
 Map: Dino_In_Jungle
 =======
 # Dinosaur Run
@@ -45,6 +45,6 @@ Map: Dino_In_Jungle
 * Muốn tạo ra item ăn xong phun lửa hủy diệt quái vật
 
 ## Tài liệu tham khảo
-* Code: Lazyfoo
+* Code: Lazyfoo, Chat_GPT
 * Map: Dino_In_Jungle
 >>>>>>> 14afcb3e66fb20568bdc0f2e79e9c6641f3f594a

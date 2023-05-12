@@ -35,7 +35,7 @@
 #define SLOW_FRAME_ITEM 3
 #define SLOW_FRAME_ENEMY 4
 
-#define IS_REPEATITIVE -1
+#define REPEATITIVE -1
 #define NOT_REPEATITIVE 0
 
 #define SPEED_UP 1
@@ -43,7 +43,7 @@
 #define TIME_UP 1
 #define FRAME_UP 1
 
-#define IN_AIR_ENEMY  1
+#define AIR  1
 #define ITEM 0
 #define GOLEM 2
 #define DINO  0

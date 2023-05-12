@@ -359,7 +359,7 @@ return success;
 void Game::HandleEvents(){
 	bool Quit_Menu = false;
 	bool Play_Again = false;
-	Mix_PlayMusic(gMenuMusic, IS_REPEATITIVE);
+	Mix_PlayMusic(gMenuMusic, REPEATITIVE);
 	while (!Quit_Menu)
 	{
 		SDL_Event e_mouse;
@@ -420,12 +420,12 @@ void Game::HandleEvents(){
 	string highscore = GetBestScore("high_score.txt");
 	SDL_Event e;
 	Enemy enemy1(GOLEM);
-	Enemy enemy3(IN_AIR_ENEMY);
+	Enemy enemy3(AIR);
 	Enemy item(ITEM);
 	for (int i = 0; i < 9; i++) {
 			BackgroundTexture[i] = BackgroundTexture1[i];
 		}
-		Mix_PlayMusic(gMusic, IS_REPEATITIVE);
+		Mix_PlayMusic(gMusic, REPEATITIVE);
 		enemy1.CreateGolem(enemy1, EnemyClips1, gRenderer);
 		enemy3.CreateBat(enemy3, EnemyClips3, gRenderer);	
 		item.CreateItem(item, ItemClips, gRenderer);
