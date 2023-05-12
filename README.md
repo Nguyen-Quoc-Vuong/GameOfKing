@@ -25,5 +25,5 @@
 * Muốn tạo ra item ăn xong phun lửa hủy diệt quái vật
 * 
 ## Tài liệu tham khảo
-Code: Lazyfoo
-Map: Dino_In_Jungle
+* Code: Lazyfoo
+* Map: Dino_In_Jungle
