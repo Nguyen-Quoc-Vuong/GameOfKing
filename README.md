@@ -11,7 +11,7 @@
 
 
 * Hiện điểm kỷ lục và số lần chết 
-* Có thể pause game
+* Có thể pause game, tắt âm thanh
 * Ăn item được cộng điểm
 * Thay đổi map khi đủ 500 điểm 
 
