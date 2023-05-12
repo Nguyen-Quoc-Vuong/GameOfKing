@@ -7,18 +7,16 @@
 class Button 
 {
 public:
-    ButtonMenu currentMenu;
+    ButtonMenu Menu;
 
     Button();
     
     Button(int x, int y);
 
-    void SetPosition (int x, int y);
-
     bool InSide (SDL_Event *e, int size);
 
-    void Render(SDL_Rect* currentClip, SDL_Renderer* gRenderer, LTexture &gButtonTexture);
+    void Render(SDL_Rect* Clip, SDL_Renderer* gRenderer, LTexture &LoadButtonTexture);
 
 private:
-    SDL_Point position;    
+    SDL_Point pos;    
 };

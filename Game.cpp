@@ -29,13 +29,13 @@ LTexture LoadGroundTexture;
 LTexture BackgroundTexture[BACKGROUND_LAYER];
 LTexture BackgroundTexture1[BACKGROUND_LAYER];
 LTexture BackgroundTexture2[BACKGROUND_LAYER];
-LTexture gText1Texture;
-LTexture gText2Texture;
-LTexture gText3Texture;
-LTexture gScoreTexture;
+LTexture Word1Texture;
+LTexture Word2Texture;
+LTexture Word3Texture;
+
 LTexture gHighScoreTexture;
-LTexture gDeathCountTexture;
-LTexture gInstructionTexture;
+LTexture DeathTexture;
+LTexture HelpTexture;
 
 SDL_Rect LoadPlay[BUTTON_TOTAL];
 SDL_Rect LoadHelp[BUTTON_TOTAL];
@@ -46,10 +46,10 @@ SDL_Rect LoadPlayAgain[BUTTON_TOTAL];
 SDL_Rect LoadSound[BUTTON_TOTAL];
 SDL_Rect LoadInfo[BUTTON_TOTAL];
 SDL_Rect LoadContinue[BUTTON_TOTAL];
-SDL_Rect gDinosaurClips[RUNNING_FRAMES];
-SDL_Rect gEnemyClips3[FLYING_FRAMES];
-SDL_Rect gEnemyClips1[12];
-SDL_Rect gItemClips[16];
+SDL_Rect DinosaurClips[RUNNING_FRAMES];
+SDL_Rect EnemyClips3[FLYING_FRAMES];
+SDL_Rect EnemyClips1[12];
+SDL_Rect ItemClips[16];
 
 SDL_Color textColor = {255,0,0};
 TTF_Font* gFont = nullptr;
@@ -200,17 +200,17 @@ bool Game::LoadMedia(){
 		}
 		else
 		{
-			if (!gText1Texture.LoadFromRenderedText("Your score: ", gFont, textColor, gRenderer))
+			if (!Word1Texture.LoadFromRenderedText("Your score: ", gFont, textColor, gRenderer))
 			{
 				cout << "Failed to render text1 texture" << endl;
 				success = false;
 			}
-			if (!gText2Texture.LoadFromRenderedText("High score: ", gFont, textColor, gRenderer))
+			if (!Word2Texture.LoadFromRenderedText("High score: ", gFont, textColor, gRenderer))
 			{
 				cout << "Failed to render text2 texture" << endl;
 				success = false;
 			}
-			if (!gText3Texture.LoadFromRenderedText("Death: ", gFont, textColor, gRenderer))
+			if (!Word3Texture.LoadFromRenderedText("Death: ", gFont, textColor, gRenderer))
 			{
 				cout << "Failed to render text3 texture" << endl;
 				success = false;
@@ -220,7 +220,7 @@ bool Game::LoadMedia(){
 				cout << "Failed to load menu image" << endl;
 				success = false;
 			}
-			if (!gInstructionTexture.LoadFromFile("src/imgs/background/instruction1.png", gRenderer))
+			if (!HelpTexture.LoadFromFile("src/imgs/background/instruction1.png", gRenderer))
 			{
 				cout << "Failed to load instruction image" << endl;
 				success = false;
@@ -376,7 +376,7 @@ void Game::HandleEvents(){
 			
 			HandleHelpButton(&e_mouse, LoadBack,
 							HelpButton, BackButton, 
-							gInstructionTexture, LoadBackTexture,
+							HelpTexture, LoadBackTexture,
 							gRenderer, Quit_Game, gClick);
 
 			HandleExitButton(&e_mouse, ExitButton, Quit_Menu, gClick);
@@ -387,61 +387,60 @@ void Game::HandleEvents(){
 		LoadMenuTexture.Render(0, 0, gRenderer);
 
 
-		SDL_Rect* currentClip_Play = &LoadPlay[PlayButton.currentMenu];
-		PlayButton.Render(currentClip_Play, gRenderer, LoadPlayTexture);
+		SDL_Rect* Clip_Play = &LoadPlay[PlayButton.Menu];
+		PlayButton.Render(Clip_Play, gRenderer, LoadPlayTexture);
 		
-		SDL_Rect* currentClip_Help = &LoadHelp[HelpButton.currentMenu];
-		HelpButton.Render(currentClip_Help, gRenderer, LoadHelpTexture);
+		SDL_Rect* Clip_Help = &LoadHelp[HelpButton.Menu];
+		HelpButton.Render(Clip_Help, gRenderer, LoadHelpTexture);
 
-		SDL_Rect* currentClip_Exit = &LoadExit[ExitButton.currentMenu];
-		ExitButton.Render(currentClip_Exit, gRenderer, LoadExitTexture);
+		SDL_Rect* Clip_Exit = &LoadExit[ExitButton.Menu];
+		ExitButton.Render(Clip_Exit, gRenderer, LoadExitTexture);
 
 		
 		SDL_RenderPresent(gRenderer);
 
 
 	}
-	int deathCount = 0;
+	int death = 0;
 	while (Play_Again)
 	{		
-		for (int i = 0; i < 9; i++) {
-			BackgroundTexture[i] = BackgroundTexture1[i];
-		}
+		
 	bool winter = false;
 	bool night = true;
 	bool createItem = false;
 	srand(time(NULL));
 	int time = 0;
 	int score = 0;
-	int acceleration = 0;
+	int acce = 0;
 	int frame_Dinosaur = 0;
-	int frame_Enemy = 0;
-	int frame_Enemy1 = 0;
-	int frame_Enemy3 = 0;
+	int frame_Golem = 0;
+	int frame_Bat = 0;
 	int frame_Item = 0;
 	int count = 0;
-	string highscore = GetHighScoreFromFile("high_score.txt");
+	string highscore = GetBestScore("high_score.txt");
 	SDL_Event e;
 	Enemy enemy1(GOLEM);
 	Enemy enemy3(IN_AIR_ENEMY);
 	Enemy item(ITEM);
-
+	for (int i = 0; i < 9; i++) {
+			BackgroundTexture[i] = BackgroundTexture1[i];
+		}
 		Mix_PlayMusic(gMusic, IS_REPEATITIVE);
-		enemy1.GenerateGolem(enemy1, gEnemyClips1, gRenderer);
-		enemy3.GenerateBat(enemy3, gEnemyClips3, gRenderer);	
-		item.GenerateItem(item, gItemClips, gRenderer);
+		enemy1.CreateGolem(enemy1, EnemyClips1, gRenderer);
+		enemy3.CreateBat(enemy3, EnemyClips3, gRenderer);	
+		item.CreateItem(item, ItemClips, gRenderer);
 
-		dinosaur.GenerateDinosaur(dinosaur, gDinosaurClips, gRenderer);
+		dinosaur.CreateDinosaur(dinosaur, DinosaurClips, gRenderer);
 
 		int OffsetSpeed_Ground = BASE_OFFSET_SPEED;
 		vector <double> OffsetSpeed_Bkgr(BACKGROUND_LAYER, BASE_OFFSET_SPEED);
 		bool Quit = false;
-		bool Game_State = true;
+		bool State = true;
 		while (!Quit)
 		{
-			if (Game_State) 
+			if (State) 
 			{	
-				 UpdateGameTimeAndScore(time, acceleration, score);
+				 UpdateGame(time, acce, score);
 				while (SDL_PollEvent(&e) != 0){
 					if (e.type == SDL_QUIT) {
 						Quit = true;
@@ -450,7 +449,7 @@ void Game::HandleEvents(){
 
 					else {
 						HandlePauseButton(&e,gRenderer,LoadContinue,
-						PauseButton,ContinueButton,LoadContinueTexture,Game_State,gClick);
+						PauseButton,ContinueButton,LoadContinueTexture,State,gClick);
 						HandleSoundButton(&e, SoundButton, gClick );
 						}
 
@@ -459,16 +458,16 @@ void Game::HandleEvents(){
 				SDL_SetRenderDrawColor(gRenderer,0xFF,0xFF,0xFF,0xFF);
 				SDL_RenderClear(gRenderer);
 				if (night) {
-					enemy1.GenerateGolem(enemy1, gEnemyClips1, gRenderer);
-					enemy3.GenerateBat(enemy3, gEnemyClips3, gRenderer);
+					enemy1.CreateGolem(enemy1, EnemyClips1, gRenderer);
+					enemy3.CreateBat(enemy3, EnemyClips3, gRenderer);
 					enemy1.pathID = "src/imgs/enemy/golem.png";
-					RenderScrollingBackground(OffsetSpeed_Bkgr, BackgroundTexture1, gRenderer);
+					RenderBackground(OffsetSpeed_Bkgr, BackgroundTexture1, gRenderer);
 				}
 				else if (winter) {
-					enemy1.GenerateGolem(enemy1, gEnemyClips1, gRenderer);
-					enemy3.GenerateBat(enemy3, gEnemyClips3, gRenderer);
+					enemy1.CreateGolem(enemy1, EnemyClips1, gRenderer);
+					enemy3.CreateBat(enemy3, EnemyClips3, gRenderer);
 					enemy1.pathID = "src/imgs/enemy/golem3.png";
-					RenderScrollingBackground(OffsetSpeed_Bkgr, BackgroundTexture2, gRenderer);
+					RenderBackground(OffsetSpeed_Bkgr, BackgroundTexture2, gRenderer);
 				}
 				
 				
@@ -477,64 +476,63 @@ void Game::HandleEvents(){
 					createItem = true;
 				}
 				dinosaur.Move();
-				SDL_Rect* currentClip_Dinosaur = nullptr;
+				SDL_Rect* Clip_Dinosaur = nullptr;
 				if (dinosaur.OnGround())
 				{
-					currentClip_Dinosaur = &gDinosaurClips[frame_Dinosaur / SLOW_FRAME_DINO];
-					dinosaur.Render(gRenderer, currentClip_Dinosaur);
+					Clip_Dinosaur = &DinosaurClips[frame_Dinosaur / SLOW_FRAME_DINO];
+					dinosaur.Render(gRenderer, Clip_Dinosaur);
 				}
 				else if (dinosaur.GetPosY() < GROUND)
 				{
-					currentClip_Dinosaur = &gDinosaurClips[0];
-					dinosaur.Render(gRenderer, currentClip_Dinosaur);
+					Clip_Dinosaur = &DinosaurClips[0];
+					dinosaur.Render(gRenderer, Clip_Dinosaur);
 				}
-				SDL_Rect* currentClip_Enemy1 = &gEnemyClips1[frame_Enemy1 / SLOW_FRAME_ENEMY];
-				SDL_Rect* currentClip_Enemy3 = &gEnemyClips3[frame_Enemy3 / SLOW_FRAME_ENEMY];
-				SDL_Rect* currentClip_Item = &gItemClips[frame_Item / SLOW_FRAME_ITEM];
+				SDL_Rect* Clip_Golem = &EnemyClips1[frame_Golem / SLOW_FRAME_ENEMY];
+				SDL_Rect* Clip_Bat = &EnemyClips3[frame_Bat / SLOW_FRAME_ENEMY];
+				SDL_Rect* Clip_Item = &ItemClips[frame_Item / SLOW_FRAME_ITEM];
 
-				enemy1.Move(acceleration);
-				enemy1.Render(gRenderer, currentClip_Enemy1);
+				enemy1.Move(acce);
+				enemy1.Render(gRenderer, Clip_Golem);
 
-				enemy3.Move(acceleration);
-				enemy3.Render(gRenderer, currentClip_Enemy3);				
+				enemy3.Move(acce);
+				enemy3.Render(gRenderer, Clip_Bat);				
 				
 				if (createItem)
 				{	
 					if (night) 
 					{
-						item.GenerateItem(item, gItemClips, gRenderer);
+						item.CreateItem(item, ItemClips, gRenderer);
 						item.pathID = "src/imgs/enemy/item2.png";
 					}
 					else if (winter)
 					{
-						item.GenerateItem(item, gItemClips, gRenderer);
+						item.CreateItem(item, ItemClips, gRenderer);
 						item.pathID = "src/imgs/enemy/item3.png";
-					}
-					item.Move(acceleration);
-					item.Render(gRenderer, currentClip_Item);
+				
+					item.Move(acce);
+					item.Render(gRenderer, Clip_Item);
 				}
+				}						
+				SDL_Rect* Clip_Pause = &LoadPause[PauseButton.Menu];
+				PauseButton.Render(Clip_Pause, gRenderer, LoadPauseTexture);
 				
-							
-				SDL_Rect* currentClip_Pause = &LoadPause[PauseButton.currentMenu];
-				PauseButton.Render(currentClip_Pause, gRenderer, LoadPauseTexture);
-				
-				SDL_Rect* currentClip_Sound = &LoadSound[SoundButton.currentMenu];
-				SoundButton.Render(currentClip_Sound, gRenderer, LoadSoundTexture);
+				SDL_Rect* Clip_Sound = &LoadSound[SoundButton.Menu];
+				SoundButton.Render(Clip_Sound, gRenderer, LoadSoundTexture);
 
-				DrawPlayerScore(gText1Texture, gScoreTexture, textColor, gRenderer, gFont, score);
-				DrawPlayerHighScore(gText2Texture, gHighScoreTexture, textColor, gRenderer, gFont, highscore);
-				DrawDeath(gText3Texture, gDeathCountTexture, textColor, gRenderer, gFont, deathCount);
+				DrawPlayerScore(Word1Texture, LoadScoreTexture, textColor, gRenderer, gFont, score);
+				DrawBestScore(Word2Texture, LoadHighScoreTexture, textColor, gRenderer, gFont, highscore);
+				DrawDeath(Word3Texture, DeathTexture, textColor, gRenderer, gFont, death);
 
 				if (CheckEnemyColission(dinosaur,
 					enemy1, enemy3, 
-					currentClip_Dinosaur, currentClip_Enemy1, currentClip_Enemy3))
+					Clip_Dinosaur, Clip_Golem, Clip_Bat))
 				{
-					deathCount++;
+					death++;
 					Mix_PauseMusic();
 					Mix_PlayChannel(MIX_CHANNEL, gLose, NOT_REPEATITIVE);
-					UpdateHighScore("high_score.txt", score, highscore);
+					UpdateBestScore("high_score.txt", score, highscore);
 					Quit = true;
-					DrawEndGameSelection(LoadLoseTexture, &e, gRenderer, Play_Again);
+					DrawEndGame(LoadLoseTexture, &e, gRenderer, Play_Again);
 					if (!Play_Again)
 					{
 						enemy1.~Enemy();
@@ -544,7 +542,7 @@ void Game::HandleEvents(){
 				}
 				
 
-				if(CheckColission(dinosaur, currentClip_Dinosaur, item, currentClip_Item) )
+				if(Colission(dinosaur, Clip_Dinosaur, item, Clip_Item) )
 				{
 					createItem = false;
 					item.posX = -100;
@@ -554,35 +552,35 @@ void Game::HandleEvents(){
 					if (winter && score >=300) {
 						winter = false;
 						night = true;
-						RenderScrollingBackground(OffsetSpeed_Bkgr, BackgroundTexture1, gRenderer);
+						RenderBackground(OffsetSpeed_Bkgr, BackgroundTexture1, gRenderer);
 						SDL_RenderPresent(gRenderer);
 						SDL_RenderClear(gRenderer);
 						SDL_Delay(38);
 						
 						ControlDinoFrame(frame_Dinosaur);
-						ControlBatFrame(frame_Enemy3);
-						ControlGolemFrame(frame_Enemy1);
+						ControlBatFrame(frame_Bat);
+						ControlGolemFrame(frame_Golem);
 						ControlItemFrame(frame_Item);
 					}
 					else if (night && score >=100 && score <300) {
 						winter = true;;
 						night = false;
-						RenderScrollingBackground(OffsetSpeed_Bkgr, BackgroundTexture2, gRenderer);
+						RenderBackground(OffsetSpeed_Bkgr, BackgroundTexture2, gRenderer);
 						SDL_RenderPresent(gRenderer);
 						SDL_RenderClear(gRenderer);
 						SDL_Delay(38);
 					
 						ControlDinoFrame(frame_Dinosaur);
-						ControlBatFrame(frame_Enemy3);
-						ControlGolemFrame(frame_Enemy1);
+						ControlBatFrame(frame_Bat);
+						ControlGolemFrame(frame_Golem);
 						ControlItemFrame(frame_Item);
 					}
 				
 
 				SDL_RenderPresent(gRenderer);
 				ControlDinoFrame(frame_Dinosaur);
-				ControlGolemFrame(frame_Enemy1);
-				ControlBatFrame(frame_Enemy3);
+				ControlGolemFrame(frame_Golem);
+				ControlBatFrame(frame_Bat);
 				ControlItemFrame(frame_Item);
 			}		
 		}					
@@ -591,8 +589,17 @@ void Game::HandleEvents(){
 		
 
 void Game::Close(){
+
+	for (int i = 0; i < BACKGROUND_LAYER; ++i)
+	{
+		BackgroundTexture1[i].free();
+	}
+	for (int i = 0; i < BACKGROUND_LAYER; ++i)
+	{
+		BackgroundTexture2[i].free();
+	}
 	LoadMenuTexture.free();
-	gInstructionTexture.free();
+	HelpTexture.free();
     LoadPlayTexture.free();
 	LoadHelpTexture.free();
     LoadExitTexture.free();
@@ -608,14 +615,7 @@ void Game::Close(){
 	LoadText3Texture.free();
 	LoadHighScoreTexture.free();
 	LoadDeathCountTexture.free();
-	for (int i = 0; i < BACKGROUND_LAYER; ++i)
-	{
-		BackgroundTexture1[i].free();
-	}
-	for (int i = 0; i < BACKGROUND_LAYER; ++i)
-	{
-		BackgroundTexture2[i].free();
-	}
+	
 	//Destroy Sound
 	Mix_FreeMusic(gMusic);
 	Mix_FreeMusic(gMenuMusic);

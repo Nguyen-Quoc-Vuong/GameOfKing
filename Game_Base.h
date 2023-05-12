@@ -38,10 +38,10 @@
 #define IS_REPEATITIVE -1
 #define NOT_REPEATITIVE 0
 
-#define SPEED_INCREASEMENT 1
-#define SCORE_INCREASEMENT 1
-#define TIME_INCREASEMENT 1
-#define FRAME_INCREASEMENT 1
+#define SPEED_UP 1
+#define SCORE_UP 1
+#define TIME_UP 1
+#define FRAME_UP 1
 
 #define IN_AIR_ENEMY  1
 #define ITEM 0
@@ -50,7 +50,7 @@
 #define MINOTOUR1  1
 #define MINOTOUR2 2
 #define MINOTOUR3  3
-
+void LogError(string msg, int error_code = SDL_ERROR);
 const int COMMON_BUTTON_WIDTH = 150;
 const int COMMON_BUTTON_HEIGHT = 98;
 const int SMALL_BUTTON_WIDTH = 57;
@@ -89,14 +89,14 @@ const int DEADTH_COUNT_POSX = 770;
 const int DEADTH_COUNT_POSY = 140;
 
 const double LAYER_1_SPEED = 0.0;
-const double LAYER_2_SPEED = 0.25; 
-const double LAYER_3_SPEED = 0.5;
-const double LAYER_4_SPEED = 0.75;
-const double LAYER_5_SPEED = 1.0;
-const double LAYER_6_SPEED = 1.25;
-const double LAYER_7_SPEED = 1.5;
-const double LAYER_8_SPEED = 1.75;
-const double LAYER_9_SPEED = 2.0;
+const double LAYER_2_SPEED = 0.2; 
+const double LAYER_3_SPEED = 0.4;
+const double LAYER_4_SPEED = 0.6;
+const double LAYER_5_SPEED = 0.8;
+const double LAYER_6_SPEED = 1.00;
+const double LAYER_7_SPEED = 1.2;
+const double LAYER_8_SPEED = 1.4;
+const double LAYER_9_SPEED = 1.6;
 
 const int RUNNING_FRAMES = 6;
 const int FLYING_FRAMES = 5;
@@ -113,4 +113,3 @@ enum ButtonMenu
 
 };
 
-void LogError(string msg, int error_code = SDL_ERROR);

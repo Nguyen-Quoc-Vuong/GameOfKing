@@ -21,7 +21,7 @@ public:
 	bool OnGround();
 
 	void HandleEvent(SDL_Event& e, Mix_Chunk *gJump);
-	void GenerateDinosaur(Dinosaur& dinosaur,
+	void CreateDinosaur(Dinosaur& dinosaur,
 		SDL_Rect* gDinosaurclips,
 		SDL_Renderer* gRenderer);
 	void Move();

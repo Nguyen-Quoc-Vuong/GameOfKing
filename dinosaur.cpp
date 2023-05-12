@@ -58,7 +58,7 @@ void Dinosaur::Move()
 		posY += FALL_SPEED;
 	}
 }
-void Dinosaur::GenerateDinosaur(Dinosaur& dinosaur,SDL_Rect* gDinosaurClips, SDL_Renderer* gRenderer) {
+void Dinosaur::CreateDinosaur(Dinosaur& dinosaur,SDL_Rect* gDinosaurClips, SDL_Renderer* gRenderer) {
 	dinosaur.LoadFromProperties(gRenderer);
 	for (int i = 0; i < 6; i++) {
 		gDinosaurClips[i].x = 57 * i;

@@ -24,15 +24,15 @@ public:
 
 	void LoadFromProperties(SDL_Renderer* gRenderer);
 
-	void GenerateBat(Enemy& enemy,
+	void CreateBat(Enemy& enemy,
 		SDL_Rect* gEnemyClips,
 		SDL_Renderer* gRenderer);//dơi
 
-	void GenerateGolem(Enemy& enemy,
+	void CreateGolem(Enemy& enemy,
 		SDL_Rect(&gEnemyClips)[12],
 		SDL_Renderer* gRenderer);//quái vật
 
-	void GenerateItem(Enemy& enemy,
+	void CreateItem(Enemy& enemy,
 		SDL_Rect* gItemClips,
 		SDL_Renderer* gRenderer);//item
 

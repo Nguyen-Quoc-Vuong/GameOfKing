@@ -2,7 +2,7 @@
 #include "common.h"
 #include "Game_Base.h"
 #include <vector>
-void Enemy:: GenerateBat(Enemy& enemy,
+void Enemy:: CreateBat(Enemy& enemy,
     SDL_Rect *gEnemyClips,
     SDL_Renderer* gRenderer)
 {
@@ -15,7 +15,7 @@ void Enemy:: GenerateBat(Enemy& enemy,
     }
 }    
 
-void Enemy:: GenerateGolem(Enemy& enemy,
+void Enemy:: CreateGolem(Enemy& enemy,
     SDL_Rect(&gEnemyClips)[12],
     SDL_Renderer* gRenderer)
 {
@@ -28,7 +28,7 @@ void Enemy:: GenerateGolem(Enemy& enemy,
     }
 }
 
-void Enemy:: GenerateItem(Enemy& enemy,
+void Enemy:: CreateItem(Enemy& enemy,
 		SDL_Rect* gItemClips,
 		SDL_Renderer* gRenderer)
 {
@@ -149,15 +149,15 @@ void Enemy::Move(int acceleration)
         }   
     }
 }
-void Enemy::Render(SDL_Renderer* gRenderer, SDL_Rect* currentClip)
+void Enemy::Render(SDL_Renderer* gRenderer, SDL_Rect* Clip)
 {
     SDL_Rect renderSpace = { posX, posY, eWidth, eHeight};
-    if (currentClip != nullptr)
+    if (Clip != nullptr)
     {
         if (type == GOLEM) 
         {
-            renderSpace.w = currentClip->w + 20;
-			renderSpace.h = currentClip->h + 20;
+            renderSpace.w = Clip->w + 20;
+			renderSpace.h = Clip->h + 20;
         }
         else if (type == ITEM) 
         {
@@ -166,13 +166,13 @@ void Enemy::Render(SDL_Renderer* gRenderer, SDL_Rect* currentClip)
         }
         else 
         {
-            renderSpace.w = currentClip->w;
-            renderSpace.h = currentClip->h;
+            renderSpace.w = Clip->w;
+            renderSpace.h = Clip->h;
         }   
         
     }
-    if (type == GOLEM ) SDL_RenderCopyEx(gRenderer, EnemyTexture, currentClip, &renderSpace, 0, NULL, SDL_FLIP_HORIZONTAL);
-    else  SDL_RenderCopy(gRenderer, EnemyTexture, currentClip, &renderSpace);
+    if (type == GOLEM ) SDL_RenderCopyEx(gRenderer, EnemyTexture, Clip, &renderSpace, 0, NULL, SDL_FLIP_HORIZONTAL);
+    else  SDL_RenderCopy(gRenderer, EnemyTexture, Clip, &renderSpace);
 }
 
 int Enemy::GetType()
